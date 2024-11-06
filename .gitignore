@@ -396,3 +396,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+/Asset
+/Properties
+/Code
+TestGUI.cs
+OttoIconChanger.sln
