@@ -17,16 +17,53 @@ namespace OttoIconChanger
         {
             public static void Postfix(scnEditor __instance)
             {
-                if (setting.IsAnimatedCharacterSelected()) //If selected character is animted load animation logic else static image logic
+                if (Main.setting.CustomeOttoImage)
                 {
-                    LoadImageAnimation(__instance);
+                    if (setting.IsAnimatedCharacterSelected()) //If selected character is animted load animation logic else static image logic
+                    {
+                        LoadImageAnimation(__instance);
+                    }
+                    else
+                    {
+                        LoadImage(__instance);
+                    }
                 }
-                else
+                if (setting.OttoColorChanger || setting.OttoGreyOff)
                 {
-                    LoadImage(__instance);
+                    OttoColorChanger(__instance);
                 }
             }
+            private static void OttoColorChanger(scnEditor __instance)
+            {
 
+                    Image autoImage = __instance.autoImage;
+                    if (autoImage == null) return;
+
+                    //Apply OttoColorChanger if enabled
+                    Color OttoColor = setting.OttoColorChanger ? setting.Ottocolor : autoImage.color;
+
+                    //Check No Dark Otto and apply color based on RDC.auto
+                    if (!setting.OttoGreyOff && !RDC.auto)
+                    {
+                        //Darken if No Dark Otto is disabled and Otto is off
+                        OttoColor *= Color.gray;
+                    }
+
+                    //Apply the final color based on if Otto is nervous or not and High BPM or not
+                    if (setting.OttoGreyOff && !RDC.auto)
+                    {
+                        if (setting.NoNervousOtto)
+                        {
+                            OttoColor = setting.OttoColorChanger ? setting.Ottocolor : Color.white;
+                        }
+                        else
+                        {
+                            OttoColor = setting.OttoColorChanger ? setting.Ottocolor : setting.ResultForHighBpm ? Color.red : Color.white;
+                        }
+                    }
+                    // Set the final color to autoImage
+                    autoImage.color = OttoColor;
+            }
             //Animated Otto Change Method
             private static void LoadImageAnimation(scnEditor __instance)
             {
@@ -102,7 +139,11 @@ namespace OttoIconChanger
         {
             public static void Postfix(ref bool __result)
             {
-                __result = false;
+                setting.ResultForHighBpm = __result ? true : false;
+                if (setting.NoNervousOtto)
+                {
+                    __result = false;
+                }
             }
         }
     }

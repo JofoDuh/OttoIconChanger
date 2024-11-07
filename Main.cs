@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
@@ -21,7 +22,10 @@ namespace OttoIconChanger
             setting = new Setting();
             setting = UnityModManager.ModSettings.Load<Setting>(modEntry);
             Patch.setting = setting;
-
+            if (setting.OttoColorHex == "")
+            {
+                setting.OttoColorHex = "FFFFFF";
+            }
             Logger = modEntry.Logger;
             modEntry.OnToggle = OnToggle;
         }
@@ -51,36 +55,65 @@ namespace OttoIconChanger
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             // Mod settings window
-            GUILayout.Label("Non-Animated OttoIcon:");
+            GUILayout.Label("OttoIconChanger");
+            setting.NoNervousOtto = GUILayout.Toggle(setting.NoNervousOtto, "No Nervous Otto"); //Toggle to make Otto never nervous
 
-            // Display buttons for non-animated characters
-            foreach (var character in Enum.GetValues(typeof(OttoCharacter)))
+            GUILayout.Space(5); // Add space between sections
+            setting.OttoGreyOff = GUILayout.Toggle(setting.OttoGreyOff, "No dark Otto when off"); //Toggle to make Otto dark when off
+
+            Color OttoNewColor;
+            string OttoNewHex;
+            GUILayout.Space(5); // Add space between sections
+            setting.OttoColorChanger = GUILayout.Toggle(setting.OttoColorChanger, "Otto Color Changer"); //Otto Color Changer, many methods are taken from AdofaiTweaks
+            if (setting.OttoColorChanger)
             {
-                OttoCharacter ottoCharacter = (OttoCharacter)character;
-
-                // Check if the character is non-animated
-                if (!setting.IsAnimatedCharacter(ottoCharacter))
+                OttoNewColor = MoreGUILayout.ColorRgbSliders(setting.Ottocolor);
+                if (setting.Ottocolor != OttoNewColor)
                 {
-                    if (GUILayout.Button(ottoCharacter.ToString()))
-                    {
-                        setting.SelectedCharacter = ottoCharacter;
-                    }
+                    setting.Ottocolor = OttoNewColor;
+                }
+                OttoNewHex = MoreGUILayout.NamedTextField("Hex:", setting.OttoColorHex, 100f, 40f);
+                if (OttoNewHex != setting.OttoColorHex
+                    && ColorUtility.TryParseHtmlString($"#{OttoNewHex}", out OttoNewColor))
+                {
+                    setting.Ottocolor = OttoNewColor;
                 }
             }
+
             GUILayout.Space(5); // Add space between sections
-            GUILayout.Label("Animated OttoIcon:");
-
-            // Display buttons for animated characters
-            foreach (var character in Enum.GetValues(typeof(OttoCharacter)))
+            setting.CustomeOttoImage = GUILayout.Toggle(setting.CustomeOttoImage, "Custom Otto Sprites");
+            if (setting.CustomeOttoImage)
             {
-                OttoCharacter ottoCharacter = (OttoCharacter)character;
-
-                // Check if the character is animated
-                if (setting.IsAnimatedCharacter(ottoCharacter))
+                GUILayout.Label("Non-Animated OttoIcon:");
+                // Display buttons for non-animated characters
+                foreach (var character in Enum.GetValues(typeof(OttoCharacter)))
                 {
-                    if (GUILayout.Button(ottoCharacter.ToString()))
+                    OttoCharacter ottoCharacter = (OttoCharacter)character;
+
+                    // Check if the character is non-animated
+                    if (!setting.IsAnimatedCharacter(ottoCharacter))
                     {
-                        setting.SelectedCharacter = ottoCharacter;
+                        if (GUILayout.Button(ottoCharacter.ToString()))
+                        {
+                            setting.SelectedCharacter = ottoCharacter;
+                        }
+                    }
+                }
+                GUILayout.Space(5); // Add space between sections
+                GUILayout.Label("Animated OttoIcon:");
+
+                // Display buttons for animated characters
+                foreach (var character in Enum.GetValues(typeof(OttoCharacter)))
+                {
+                    OttoCharacter ottoCharacter = (OttoCharacter)character;
+
+                    // Check if the character is animated
+                    if (setting.IsAnimatedCharacter(ottoCharacter))
+                    {
+                        if (GUILayout.Button(ottoCharacter.ToString()))
+                        {
+                            setting.SelectedCharacter = ottoCharacter;
+                        }
                     }
                 }
             }

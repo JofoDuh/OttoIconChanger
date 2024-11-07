@@ -1,15 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using UnityEngine;
 using UnityModManagerNet;
 
 namespace OttoIconChanger
 {
     public class Setting : UnityModManager.ModSettings
     {
-        public bool FurinaToggleCheck = true;
-        public bool ElysiaToggleCheck = false;
-        public bool Coroutineon = false;
+        //From AdofaiTweaks
+        private Color _Ottocolor;
+        public Color Ottocolor
+        {
+            get => _Ottocolor;
+            set
+            {
+                _Ottocolor = value;
+                OttoColorHex = ColorUtility.ToHtmlStringRGB(value);
+            }
+        }
+        public string OttoColorHex { get; set; }
+        //
+        public bool OttoColorChanger = false;
+        public bool CustomeOttoImage = false;
+        public bool OttoGreyOff = true;
+        public bool NoNervousOtto = false;
+        public bool ResultForHighBpm = false;
 
         //Otto Characters enum list
         public enum OttoCharacter
