@@ -66,6 +66,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OttoCustomColor.cs" />
+    <Compile Include="OttoCustomSprite.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="BundleLoader.cs" />
     <Compile Include="Patch.cs" />

@@ -32,9 +32,8 @@ namespace OttoIconChanger.BundleLoader
             if (bundle != null)
             {
                 //Furina assets non animated
-                FurinaOttoOn = bundle.LoadAsset<Sprite>("FurinaOtto_on");
-                FurinaOttoOff = bundle.LoadAsset<Sprite>("FurinaOtto_off"); 
-
+                FurinaOttoOn = bundle.LoadAsset<Sprite>("FurinaOtto_on1");
+                FurinaOttoOff = bundle.LoadAsset<Sprite>("FurinaOtto_off1"); 
 
                 //Elysia assets non animated
                 ElysiaOttoOn = bundle.LoadAsset<Sprite>("ElysiaOtto_on");
