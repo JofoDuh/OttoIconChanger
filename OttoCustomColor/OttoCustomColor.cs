@@ -1,7 +1,5 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
-using static OttoIconChanger.Setting;
 
 namespace OttoIconChanger
 {
@@ -14,25 +12,25 @@ namespace OttoIconChanger
             if (autoImage == null) return;
 
             //Apply OttoColorChanger if enabled
-            Color OttoColor = Patch.setting.OttoColorChanger ? Patch.setting.Ottocolor : autoImage.color;
+            Color OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : autoImage.color;
 
             //Check No Dark Otto and apply color based on RDC.auto
-            if (!Patch.setting.OttoGreyOff && !RDC.auto)
+            if (!Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
             {
                 //Darken if No Dark Otto is disabled and Otto is off
                 OttoColor *= Color.gray;
             }
 
             //Apply the final color based on if Otto is nervous or not and High BPM or not
-            if (Patch.setting.OttoGreyOff && !RDC.auto)
+            if (Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
             {
-                if (Patch.setting.NoNervousOtto)
+                if (Patch.setting.NoNervousOttoIsEnabled)
                 {
-                    OttoColor = Patch.setting.OttoColorChanger ? Patch.setting.Ottocolor : Color.white;
+                    OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : Color.white;
                 }
                 else
                 {
-                    OttoColor = Patch.setting.OttoColorChanger ? Patch.setting.Ottocolor : Patch.setting.ResultForHighBpm ? Color.red : Color.white;
+                    OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : Patch.setting.ResultForHighBpm ? Color.red : Color.white;
                 }
             }
             // Set the final color to autoImage
@@ -43,14 +41,14 @@ namespace OttoIconChanger
             Image autoImage = __instance.autoImage;
             if (autoImage == null) return;
 
-            if (Patch.setting.OttoOpacityChanger && !Patch.setting.OttoOpacityIndependent)
+            if (Patch.setting.OttoOpacityChangerIsEnabled && !Patch.setting.OttoOpacityIndependentIsEnabled)
             {
                 // Create a new color with the same RGB values but with updated alpha
                 Color newColor = autoImage.color;
                 newColor.a = Patch.setting.OttoOpacityValue / 255f; // Normalize from 0–255 to 0–1 range
                 autoImage.color = newColor; // Assign the modified color back to autoImage
             }
-            else if (Patch.setting.OttoOpacityChanger && Patch.setting.OttoOpacityIndependent)
+            else if (Patch.setting.OttoOpacityChangerIsEnabled && Patch.setting.OttoOpacityIndependentIsEnabled)
             {
                 // Create a new color with the same RGB values but with updated alpha
                 Color newColorOn = autoImage.color, newColorOff = autoImage.color;

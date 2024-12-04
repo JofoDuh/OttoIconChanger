@@ -23,26 +23,33 @@ namespace OttoIconChanger
             }
         }
         //Color Changer
-        public bool OttoColorChanger = false;
+        public bool OttoColorChangerIsEnabled = false;
         //Opacity Changer
-        public bool OttoOpacityChanger = false;
-        public bool OttoOpacityIndependent = false;
+        public bool OttoOpacityChangerIsEnabled = false;
+        public bool OttoOpacityIndependentIsEnabled = false;
         public float OttoOpacityValue = 255f;
         public float OttoOpacityValueOn = 255f;
         public float OttoOpacityValueOff = 255f;
         //Custom Otto Sprite
-        public bool CustomeOttoImage = false;
+        public bool CustomeOttoImageIsEnabled = false;
         //No Dark Otto When Off
-        public bool OttoGreyOff = false;
+        public bool OttoGreyOffIsEnabled = false;
         //No Nervous Otto
-        public bool NoNervousOtto = false;
+        public bool NoNervousOttoIsEnabled = false;
         public bool ResultForHighBpm = false;
-        ////OttoSizeChanger
-        //public bool OttoSizeChanger = false;
-        //public bool StoreOriginalValue = false;
-        //public (float, float) originalOttoSize;
-        //public (float, float) originalOttoButtonSize;
-        //public float NewOttoSizeMultiplier = 1f;
+        //Custom Otto Position & Size
+        public bool OttoPosChangerIsEnabled = false;
+        public bool OttoSizeChangerIsEnabled = false;
+        public bool LinkSizeIsEnabled = false;
+        public bool SquareSizeIsEnabled = false;
+        public Vector2 originalOttoImageOffsetMin;
+        public Vector2 originalOttoImageOffsetMax;
+        public Vector2 originalOttoButtonOffsetMin;
+        public Vector2 originalOttoButtonOffsetMax;
+        public float PositionNewX = 0f;
+        public float PositionNewY = 0f;
+        public float NewOttoSizeX = 0f; 
+        public float NewOttoSizeY = 0f; 
 
         //Otto Characters enum list
         public enum OttoCharacter

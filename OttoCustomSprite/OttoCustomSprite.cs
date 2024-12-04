@@ -8,11 +8,7 @@ namespace OttoIconChanger
     {
         private static int animationIndex = 0;
         private static float lastFrameTime = 0f;
-        //1s = 120 frames
-        //Aim = 10 frames per 120 frames
-        //120/10 = 12
-        //We get 1/12
-        private static readonly float frameInterval = 1f / 12f; // 120 FPS base interval
+        private static readonly float frameInterval = 1f / 12f; // 120 FPS base interval, change sprite once per 10 frames
         //Animated Otto Change Method
         public static void LoadImageAnimation(scnEditor __instance)
         {

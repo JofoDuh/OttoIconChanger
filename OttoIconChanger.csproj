@@ -66,8 +66,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OttoCustomColor.cs" />
-    <Compile Include="OttoCustomSprite.cs" />
+    <Compile Include="OttoCustomColor\OttoCustomColor.cs" />
+    <Compile Include="OttoPosition&amp;SizeChanger\OttoCustomPositionAndSize.cs" />
+    <Compile Include="OttoCustomSprite\OttoCustomSprite.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="BundleLoader.cs" />
     <Compile Include="Patch.cs" />
@@ -75,6 +76,7 @@
     <Compile Include="Setting.cs" />
     <Compile Include="MoreGUILayout.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>set "modDll=OttoIconChanger.dll"

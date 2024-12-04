@@ -1,12 +1,12 @@
 ﻿using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace OttoIconChanger
 {
     public static class Patch
     {
         public static Setting setting;
-        public static RectTransform OttoImage;
 
 
         [HarmonyPatch(typeof(scnEditor), "OttoUpdate")]
@@ -14,7 +14,7 @@ namespace OttoIconChanger
         {
             public static void Postfix(scnEditor __instance)
             {
-                if (setting.CustomeOttoImage)
+                if (setting.CustomeOttoImageIsEnabled)
                 {
                     if (setting.IsAnimatedCharacterSelected()) //If selected character is animated load animation logic else static image logic
                     {
@@ -25,53 +25,16 @@ namespace OttoIconChanger
                         OttoCustomSprite.LoadImage(__instance);
                     }
                 }
-                if (setting.OttoColorChanger || setting.OttoGreyOff)
+                if (setting.OttoColorChangerIsEnabled || setting.OttoGreyOffIsEnabled)
                 {
                     OttoCustomColor.OttoColorChanger(__instance);
                 }
-                if (setting.OttoOpacityChanger)
+                if (setting.OttoOpacityChangerIsEnabled)
                 {
                     OttoCustomColor.OttoOpacityChanger(__instance);
                 }
+                OttoCustomPositionAndSize.PositionAndSizeChanger(__instance);
             }
-            //[HarmonyPatch(typeof(scnEditor), "Awake")]
-            //public static class AwakePatch
-            //{
-            //    public static void Postfix()
-            //    {
-            //        OttoSizeChanger(setting.OttoSizeChanger);
-            //    }
-            //}
-            //private static void OttoSizeChanger(bool IsEnabled)
-            //{
-
-            //    var autoImage = scnEditor.instance.autoImage;
-            //    var OttoImageRectTransform = autoImage.GetComponent<RectTransform>();
-            //    var OttoButton = autoImage.GetComponentInChildren<Button>();
-            //    var OttoButtonRectTransform = OttoButton.GetComponent<RectTransform>();
-
-            //    if (IsEnabled)
-            //    {
-            //        if (!setting.StoreOriginalValue)
-            //        {
-            //            setting.originalOttoButtonSize = (OttoButtonRectTransform.sizeDelta.x, OttoButtonRectTransform.sizeDelta.y);
-            //            setting.originalOttoSize = (OttoImageRectTransform.sizeDelta.x, OttoImageRectTransform.sizeDelta.y);
-            //            setting.StoreOriginalValue = true;
-            //        }
-            //        OttoButtonRectTransform.sizeDelta = new Vector2(setting.originalOttoButtonSize.Item1 * setting.NewOttoSizeMultiplier,
-            //            setting.originalOttoButtonSize.Item2 * setting.NewOttoSizeMultiplier);
-            //        OttoImageRectTransform.sizeDelta = new Vector2(setting.originalOttoSize.Item1 * setting.NewOttoSizeMultiplier,
-            //            setting.originalOttoSize.Item2 * setting.NewOttoSizeMultiplier);
-
-            //    }
-            //    else
-            //    {
-            //        if (!setting.StoreOriginalValue)
-            //            return;
-            //        OttoButtonRectTransform.sizeDelta = new Vector2(setting.originalOttoButtonSize.Item1, setting.originalOttoButtonSize.Item2);
-            //        OttoImageRectTransform.sizeDelta = new Vector2(setting.originalOttoSize.Item1, setting.originalOttoSize.Item2);
-            //    }
-            //}
         }
         // Patch to set result of highBPM to false to prevent red Otto
         [HarmonyPatch(typeof(scnEditor), "get_highBPM")]
@@ -80,9 +43,29 @@ namespace OttoIconChanger
             public static void Postfix(ref bool __result)
             {
                 setting.ResultForHighBpm = __result ? true : false;
-                if (setting.NoNervousOtto)
+                if (setting.NoNervousOttoIsEnabled)
                 {
                     __result = false;
+                }
+            }
+        }
+        [HarmonyPatch(typeof(scnEditor), "Start")]
+        public static class StartPatch
+        {
+            public static void Postfix()
+            {
+                bool HaveStoreOriginalValue = false;
+                var autoImageRect = scnEditor.instance.autoImage.GetComponent<RectTransform>();
+                var buttonRect = scnEditor.instance.autoImage.GetComponentInChildren<Button>()?.GetComponent<RectTransform>();
+
+                // Store original values if not already done
+                if (!HaveStoreOriginalValue)
+                {
+                    setting.originalOttoImageOffsetMin = autoImageRect.offsetMin;
+                    setting.originalOttoImageOffsetMax = autoImageRect.offsetMax;
+                    setting.originalOttoButtonOffsetMax = buttonRect.offsetMax;
+                    setting.originalOttoButtonOffsetMin = buttonRect.offsetMin;
+                    HaveStoreOriginalValue = true;
                 }
             }
         }
