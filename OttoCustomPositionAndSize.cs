@@ -28,13 +28,17 @@ namespace OttoIconChanger
                 float halfNewYSize = newYSize / 2f;
 
                 ottoImage.offsetMin = new Vector2(
-                    Patch.setting.originalOttoImageOffsetMin.x - (Patch.setting.OttoSizeChangerIsEnabled ? halfNewXSize : 0) + (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewX : 0),
-                    Patch.setting.originalOttoImageOffsetMin.y - (Patch.setting.OttoSizeChangerIsEnabled ? halfNewYSize : 0) + (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewY : 0)
+                    Patch.setting.originalOttoImageOffsetMin.x - (Patch.setting.OttoSizeChangerIsEnabled ? halfNewXSize : 0) + 
+                    (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewX : 0),
+                    Patch.setting.originalOttoImageOffsetMin.y - (Patch.setting.OttoSizeChangerIsEnabled ? halfNewYSize : 0) + 
+                    (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewY : 0)
                 );
 
                 ottoImage.offsetMax = new Vector2(
-                    Patch.setting.originalOttoImageOffsetMax.x + (Patch.setting.OttoSizeChangerIsEnabled ? halfNewXSize : 0) + (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewX : 0),
-                    Patch.setting.originalOttoImageOffsetMax.y + (Patch.setting.OttoSizeChangerIsEnabled ? halfNewYSize : 0) + (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewY : 0)
+                    Patch.setting.originalOttoImageOffsetMax.x + (Patch.setting.OttoSizeChangerIsEnabled ? halfNewXSize : 0) + 
+                    (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewX : 0),
+                    Patch.setting.originalOttoImageOffsetMax.y + (Patch.setting.OttoSizeChangerIsEnabled ? halfNewYSize : 0) + 
+                    (Patch.setting.OttoPosChangerIsEnabled ? Patch.setting.PositionNewY : 0)
                 );
 
                 // Modify OttoButton size to match OttoImage changes

@@ -24,6 +24,13 @@ namespace OttoIconChanger.BundleLoader
         public static Sprite[] FurinaAniOttoOn = new Sprite[15];
         public static Sprite[] FurinaAniOttoOff = new Sprite[18];
 
+        public static Sprite CustomOttoOn;
+        public static Sprite CustomOttoOff;
+
+        public static Sprite[] CustomAniOttoOn;
+        public static Sprite[] CustomAniOttoOff;
+
+
         //Load the sprites from Bundle and assign into varibles
         public static void LoadCustomOttoSprite()
         {

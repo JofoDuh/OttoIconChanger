@@ -16,13 +16,27 @@ namespace OttoIconChanger
             {
                 if (setting.CustomeOttoImageIsEnabled)
                 {
-                    if (setting.IsAnimatedCharacterSelected()) //If selected character is animated load animation logic else static image logic
+                    if (!setting.UseLocalImage)
                     {
-                        OttoCustomSprite.LoadImageAnimation(__instance);
+                        if (setting.IsAnimatedCharacterSelected()) //If selected character is animated load animation logic else static image logic
+                        {
+                            OttoCustomSprite.LoadImageAnimation(__instance);
+                        }
+                        else
+                        {
+                            OttoCustomSprite.LoadImage(__instance);
+                        }
                     }
                     else
                     {
-                        OttoCustomSprite.LoadImage(__instance);
+                        if (setting.UseLocalAnimation)
+                        {
+                            OttoCustomSprite.LoadImageAnimation(__instance);
+                        }
+                        else
+                        {
+                            OttoCustomSprite.LoadImage(__instance);
+                        }
                     }
                 }
                 if (setting.OttoColorChangerIsEnabled || setting.OttoGreyOffIsEnabled)

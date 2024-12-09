@@ -7,35 +7,57 @@ namespace OttoIconChanger
     {
         public static void OttoColorChanger(scnEditor __instance)
         {
-
             Image autoImage = __instance.autoImage;
             if (autoImage == null) return;
 
-            //Apply OttoColorChanger if enabled
-            Color OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : autoImage.color;
-
-            //Check No Dark Otto and apply color based on RDC.auto
+            // Determine the color to apply based on the independent color setting
+            Color OttoColor;
+            if (Patch.setting.OttoColorChangerIsEnabled)
+            {
+                if (Patch.setting.OttoColorIndependentIsEnabled)
+                {
+                    // Independent colors for "On" and "Off" states
+                    OttoColor = RDC.auto ? Patch.setting.OttocolorOff : Patch.setting.OttocolorOn;
+                }
+                else
+                {
+                    // Single color for both states
+                    OttoColor = Patch.setting.Ottocolor;
+                }
+            }
+            else
+            {
+                // Default to the autoImage color if the changer is not enabled
+                OttoColor = autoImage.color;
+            }
+            // Check No Dark Otto and apply color based on RDC.auto
             if (!Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
             {
-                //Darken if No Dark Otto is disabled and Otto is off
+                // Darken if No Dark Otto is disabled and Otto is off
                 OttoColor *= Color.gray;
             }
-
-            //Apply the final color based on if Otto is nervous or not and High BPM or not
+            // Apply the final color based on whether Otto is nervous or not and high BPM
             if (Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
             {
                 if (Patch.setting.NoNervousOttoIsEnabled)
                 {
-                    OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : Color.white;
+                    OttoColor = Patch.setting.OttoColorChangerIsEnabled
+                        ? (Patch.setting.OttoColorIndependentIsEnabled ? Patch.setting.OttocolorOff : Patch.setting.OttocolorOn)
+                        : Color.white;
                 }
                 else
                 {
-                    OttoColor = Patch.setting.OttoColorChangerIsEnabled ? Patch.setting.Ottocolor : Patch.setting.ResultForHighBpm ? Color.red : Color.white;
+                    OttoColor = Patch.setting.OttoColorChangerIsEnabled
+                        ? (Patch.setting.OttoColorIndependentIsEnabled
+                            ? (Patch.setting.ResultForHighBpm ? Color.red : Patch.setting.OttocolorOff)
+                            : (Patch.setting.ResultForHighBpm ? Color.red : Patch.setting.OttocolorOn))
+                        : Color.white;
                 }
             }
             // Set the final color to autoImage
             autoImage.color = OttoColor;
         }
+
         public static void OttoOpacityChanger(scnEditor __instance)
         {
             Image autoImage = __instance.autoImage;
