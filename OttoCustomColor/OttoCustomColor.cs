@@ -170,10 +170,10 @@ namespace OttoIconChanger
         }
         public static void OttoColorChanger(Image autoImage)
         {
+            Color OttoColor = Patch.setting.ResultForHighBpm ? Color.red : Color.white;
             if (autoImage == null) return;
 
             // Determine the color to apply based on the independent color setting
-            Color OttoColor;
             if (Patch.setting.OttoColorChangerIsEnabled)
             {
                 if (Patch.setting.OttoColorIndependentIsEnabled)
@@ -187,33 +187,12 @@ namespace OttoIconChanger
                     OttoColor = Patch.setting.Ottocolor;
                 }
             }
-            else
+            if (!RDC.auto)
             {
-                // Default to the autoImage color if the changer is not enabled
-                OttoColor = autoImage.color;
-            }
-            // Check No Dark Otto and apply color based on RDC.auto
-            if (!Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
-            {
-                // Darken if No Dark Otto is disabled and Otto is off
-                OttoColor *= Color.gray;
-            }
-            // Apply the final color based on whether Otto is nervous or not and high BPM
-            if (Patch.setting.OttoGreyOffIsEnabled && !RDC.auto)
-            {
-                if (Patch.setting.NoNervousOttoIsEnabled)
+                if (!Patch.setting.OttoGreyOffIsEnabled)
                 {
-                    OttoColor = Patch.setting.OttoColorChangerIsEnabled
-                        ? (Patch.setting.OttoColorIndependentIsEnabled ? Patch.setting.OttocolorOff : Patch.setting.OttocolorOn)
-                        : Color.white;
-                }
-                else
-                {
-                    OttoColor = Patch.setting.OttoColorChangerIsEnabled
-                        ? (Patch.setting.OttoColorIndependentIsEnabled
-                            ? (Patch.setting.ResultForHighBpm ? Color.red : Patch.setting.OttocolorOff)
-                            : (Patch.setting.ResultForHighBpm ? Color.red : Patch.setting.OttocolorOn))
-                        : Color.white;
+                    // Darken if No Dark Otto is disabled and Otto is off
+                    OttoColor *= Color.gray;
                 }
             }
             // Set the final color to autoImage

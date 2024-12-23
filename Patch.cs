@@ -106,10 +106,7 @@ namespace OttoIconChanger
                         }
                     }
                 }
-                if (setting.OttoColorChangerIsEnabled || setting.OttoGreyOffIsEnabled)
-                {
-                    OttoCustomColor.OttoColorChanger(autoImage);
-                }
+                OttoCustomColor.OttoColorChanger(autoImage);
                 if (setting.OttoOpacityChangerIsEnabled)
                 {
                     OttoCustomColor.OttoOpacityChanger(autoImage);
@@ -164,11 +161,11 @@ namespace OttoIconChanger
         {
             public static void Postfix(ref bool __result)
             {
-                setting.ResultForHighBpm = __result ? true : false;
                 if (setting.NoNervousOttoIsEnabled)
                 {
                     __result = false;
                 }
+                setting.ResultForHighBpm = __result;
             }
         }
         // Patch to set result of highBPM to false to prevent red Otto
