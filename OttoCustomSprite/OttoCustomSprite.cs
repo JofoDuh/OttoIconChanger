@@ -222,11 +222,11 @@ namespace OttoIconChanger
             if (autoImage == null) return;
 
             Sprite activeSprites = null;
-            int currentMaxFrames = 0;
+            int currentMaxFrames = 1;
 
             // Calculate frame interval dynamically
             float frameInterval = Patch.setting.FrameBasedValuesIsEnabled
-                ? (Patch.setting.FramesPerSpriteChange > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
+                ? (Patch.setting.FramesPerSecond > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
                 : Patch.setting.SecondsPerSpriteChange;
 
             // Check which character is selected
@@ -315,6 +315,7 @@ namespace OttoIconChanger
                         // Add additional character cases if needed, following the same pattern
                 }
             }
+            if (currentMaxFrames <= 0) currentMaxFrames++;
             // Update animation index based on time
             if (Time.realtimeSinceStartup - lastFrameTime >= frameInterval)
             {
