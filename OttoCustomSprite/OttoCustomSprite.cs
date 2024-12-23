@@ -21,10 +21,10 @@ namespace OttoIconChanger
                 GUILayout.BeginVertical(); // Nested layout for content
 
                 //Public Use:
-                Main.setting.UseLocalImage = true;
+                //Main.setting.UseLocalImage = true;
 
                 //Friend Use:
-                //Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
+                Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
 
                 // Static Image Selection Section
                 if (!Main.setting.UseLocalImage)
@@ -222,11 +222,11 @@ namespace OttoIconChanger
             if (autoImage == null) return;
 
             Sprite activeSprites = null;
-            int currentMaxFrames = 0;
+            int currentMaxFrames = 1;
 
             // Calculate frame interval dynamically
             float frameInterval = Patch.setting.FrameBasedValuesIsEnabled
-                ? (Patch.setting.FramesPerSpriteChange > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
+                ? (Patch.setting.FramesPerSecond > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
                 : Patch.setting.SecondsPerSpriteChange;
 
             // Check which character is selected

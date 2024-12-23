@@ -232,8 +232,10 @@ namespace OttoIconChanger
         {
             if (!FirstTimeLoad)
             {
-                LocalAnimationSetDefaults[1] = 1;
-                LocalImageSetDefaults[1] = 1;
+                LocalAnimationSetDefaults[0] = 9;
+                LocalImageSetDefaults[0] = 9;
+                LocalAnimationSetDefaults[1] = 9;
+                LocalImageSetDefaults[1] = 9;
                 LocalAnimationSetDefaults[3] = 1;
                 LocalImageSetDefaults[3] = 1;
                 LocalAnimationSetDefaults[5] = 1;

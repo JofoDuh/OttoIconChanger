@@ -128,7 +128,7 @@ namespace OttoIconChanger
                 GUILayout.EndHorizontal();
 
                 // Add a toggle to enable or disable linking
-                Main.setting.SquareSizeIsEnabled = GUILayout.Toggle(Main.setting.SquareSizeIsEnabled, "Link X an Y");
+                Main.setting.SquareSizeIsEnabled = GUILayout.Toggle(Main.setting.SquareSizeIsEnabled, "Link X and Y");
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }

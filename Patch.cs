@@ -91,6 +91,7 @@ namespace OttoIconChanger
             public static void Postfix(scnEditor __instance)
             {
                 Image autoImage = __instance.autoImage;
+                OttoCustomColor.OttoColorChanger(autoImage);
                 if (setting.CustomeOttoImageIsEnabled)
                 {
                     if (!isBlinking)
@@ -106,7 +107,6 @@ namespace OttoIconChanger
                         }
                     }
                 }
-                OttoCustomColor.OttoColorChanger(autoImage);
                 if (setting.OttoOpacityChangerIsEnabled)
                 {
                     OttoCustomColor.OttoOpacityChanger(autoImage);
