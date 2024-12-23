@@ -244,7 +244,6 @@ namespace OttoIconChanger
                 LocalImageSetDefaults[7] = 1;
                 FirstTimeLoad = true;
             }
-
         }
         public override void Save(UnityModManager.ModEntry modEntry)
         {
