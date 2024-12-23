@@ -51,11 +51,10 @@ namespace OttoIconChanger
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             // Mod settings window
-            GUILayout.Label("OttoIconChanger");
             setting.NoNervousOttoIsEnabled = GUILayout.Toggle(setting.NoNervousOttoIsEnabled, "No Nervous Otto"); //Toggle to make Otto never nervous
 
             GUILayout.Space(5); // Add space between sections
-            setting.OttoGreyOffIsEnabled = GUILayout.Toggle(setting.OttoGreyOffIsEnabled, "No dark Otto when off"); //Toggle to make Otto dark when off
+            setting.OttoGreyOffIsEnabled = GUILayout.Toggle(setting.OttoGreyOffIsEnabled, "No Dark Otto"); //Toggle to make Otto dark when off
 
             OttoCustomColor.ColorAndOpacitySettings();
             OttoCustomPositionAndSize.PosAndSizeSettings();
