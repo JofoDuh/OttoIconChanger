@@ -2,6 +2,7 @@
 using UnityEngine;
 using static UnityEngine.ImageConversion;
 using System.Linq;
+using System;
 
 namespace OttoIconChanger
 {
@@ -84,7 +85,13 @@ namespace OttoIconChanger
             if (Valid)
             {
                 // Load and sort the animation frames
-                string[] imagePaths = Directory.GetFiles(folderPath, "*.png");
+                // Load and sort the animation frames for multiple image types
+                string[] imagePaths = Directory.GetFiles(folderPath, "*.*")
+                    .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                   file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
+
                 if (imagePaths.Length == 0)
                 {
                     //Main.Logger.Log("No frames found in folder.");

@@ -67,12 +67,12 @@ namespace OttoIconChanger
                     {
                         Main.setting.Ottocolor = OttoNewColor;
                     }
-                    OttoNewHex = MoreGUILayout.NamedTextField("Hex:", Main.setting.OttoColorHexOn, 100f, 40f);
-                    if (OttoNewHex != Main.setting.OttoColorHexOn && ColorUtility.TryParseHtmlString($"#{OttoNewHex}", out OttoNewColor))
+                    OttoNewHex = MoreGUILayout.NamedTextField("Hex:", Main.setting.OttoColorHex, 100f, 40f);
+                    if (OttoNewHex != Main.setting.OttoColorHex && ColorUtility.TryParseHtmlString($"#{OttoNewHex}", out OttoNewColor))
                     {
-                        Main.setting.OttocolorOn = OttoNewColor;
+                        Main.setting.Ottocolor = OttoNewColor;
                     }
-                    Main.setting.OttoColorHexOn = OttoNewHex;
+                    Main.setting.OttoColorHex = OttoNewHex;
                 }
                 Main.setting.OttoColorIndependentIsEnabled = GUILayout.Toggle(Main.setting.OttoColorIndependentIsEnabled, "Set Color for On and Off Otto");
                 GUILayout.EndVertical();
