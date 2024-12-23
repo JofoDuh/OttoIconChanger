@@ -1,11 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Reflection;
+using UnityEngine;
 
-//From AdofaiTweaks
 namespace OttoIconChanger
 {
     public static class MoreGUILayout
     {
-        //From AdofaiTweaks
+        // Copyright (c) 2021 PizzaLovers007
         public static Color ColorRgbSliders(Color color)
         {
             float oldR = Mathf.Round(color.r * 255);
@@ -88,6 +88,71 @@ namespace OttoIconChanger
             string newValue = GUILayout.TextField(value, GUILayout.Width(fieldWidth));
             GUILayout.FlexibleSpace();
             return newValue;
+        }
+
+        //Jofo's codes from here
+        public static string PathAndBrowse(string label, string path, float fieldWidth, bool isFolder)
+        {
+
+            FileAndFolderPicker picker = new FileAndFolderPicker();
+            // Render the text field and store the updated value
+            string updatedPath = NamedTextField(label, path, fieldWidth);
+            // Handle browsing for file or folder
+            if (!isFolder)
+            {
+                if (GUILayout.Button("Browse", GUILayout.Width(70f), GUILayout.Height(20f)))
+                {
+                    updatedPath = picker.OpenFilePickerForImage(); // File selection
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Browse", GUILayout.Width(70f), GUILayout.Height(20f)))
+                {
+                    updatedPath = picker.OpenFolderPickerForAnimation(); // Folder selection
+                }
+            }
+            return updatedPath; // Return the updated path
+        }
+
+        // Dropdown logic
+        static Vector2 scrollPosition;
+        static bool[] displayDropdowns = new bool[10];
+        public static void SetDefaultDropdown(ref int selectedValue, string[] options, int index)
+        {
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Default State:", GUILayout.Width(80f)); // Set a fixed width for the label to align properly
+                                                                      // Main dropdown button
+            if (GUILayout.Button(selectedValue == 10 ? "Default" : options[selectedValue], GUILayout.Width(100f), GUILayout.Height(20f)))
+            {
+                displayDropdowns[index] = !displayDropdowns[index]; // Toggle dropdown visibility
+            }
+            GUILayout.EndHorizontal();
+            // Render the dropdown if it is displayed
+            if (displayDropdowns[index])
+            {
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(85f);
+                GUILayout.BeginVertical();
+                GUILayout.Space(5f); // Reduce excessive space between the button and dropdown
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(100f)); // Increased dropdown height for better UX
+                for (int i = 0; i < options.Length; i++)
+                {
+                    if (GUILayout.Button(options[i], GUILayout.Height(20f), GUILayout.Width(100f))) // Match dropdown button size
+                    {
+                        selectedValue = i; // Update the selected value
+                        displayDropdowns[index] = false; // Close the dropdown
+                    }
+                }
+                if (GUILayout.Button("Default", GUILayout.Height(20f), GUILayout.Width(100f)))
+                {
+                    selectedValue = 10;
+                    displayDropdowns[index] = false;
+                }
+                GUILayout.EndScrollView();
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+            }
         }
     }
 }

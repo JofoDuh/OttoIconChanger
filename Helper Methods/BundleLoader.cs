@@ -26,11 +26,50 @@ namespace OttoIconChanger.BundleLoader
 
         public static Sprite CustomOttoOn;
         public static Sprite CustomOttoOff;
+        public static Sprite CustomOttoRightOn;
+        public static Sprite CustomOttoRightOff;
+        public static Sprite CustomOttoLeftOn;
+        public static Sprite CustomOttoLeftOff;
+        public static Sprite CustomOttoNervousOn;
+        public static Sprite CustomOttoNervousOff;
+        public static Sprite CustomOttoPet;
+        public static Sprite CustomOttoMiss;
 
         public static Sprite[] CustomAniOttoOn;
         public static Sprite[] CustomAniOttoOff;
+        public static Sprite[] CustomAniOttoRightOn;
+        public static Sprite[] CustomAniOttoRightOff;
+        public static Sprite[] CustomAniOttoLeftOn;
+        public static Sprite[] CustomAniOttoLeftOff;
+        public static Sprite[] CustomAniOttoNervousOn;
+        public static Sprite[] CustomAniOttoNervousOff;
+        public static Sprite[] CustomAniOttoPet;
+        public static Sprite[] CustomAniOttoMiss;
 
-
+        // Single frame sprites
+        public static Sprite[] CustomOttoSprites = new Sprite[10] {
+            CustomOttoOn,
+            CustomOttoOff,
+            CustomOttoLeftOn,
+            CustomOttoLeftOff,
+            CustomOttoRightOn,
+            CustomOttoRightOff,
+            CustomOttoNervousOn,
+            CustomOttoNervousOff,
+            CustomOttoPet,
+            CustomOttoMiss};
+        // Animated sprites
+        public static Sprite[][] CustomAniOttoSprites = new Sprite[][] {
+            CustomAniOttoOn,
+            CustomAniOttoOff,
+            CustomAniOttoLeftOn,
+            CustomAniOttoLeftOff,
+            CustomAniOttoRightOn,
+            CustomAniOttoRightOff,
+            CustomAniOttoNervousOn,
+            CustomAniOttoNervousOff,
+            CustomAniOttoPet,
+            CustomAniOttoMiss};
         //Load the sprites from Bundle and assign into varibles
         public static void LoadCustomOttoSprite()
         {
