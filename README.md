@@ -1,7 +1,7 @@
 # OttoIconChanger
 OttoIconChanger is a mod made for changing the Otto icon in the game A Dance Of Fire and Ice by importing image(s).
 
-##Features
+## Features
 * **No Nervous Otto** - Otto will no longer be nervous when playing fast level.
 * **No Dark Otto** - Otto will no longer be dark when off.
 * **Otto Color Changer** - Modify the color of the Otto image.
@@ -10,7 +10,7 @@ OttoIconChanger is a mod made for changing the Otto icon in the game A Dance Of 
 * **Otto Size Changer** - Modify the size of Otto.
 * **Custom Otto Image** - Change the appearance of Otto.
 
-##Guide on how to use Custom Otto Image
+## Guide on how to use Custom Otto Image
 
 * **For Non-Animated Images:** 
 Input or browse for the path to the image (e.g., path1/path2/image.png) for the Otto state you'd like to change and then hit "Apply". 
