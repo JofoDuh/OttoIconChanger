@@ -84,7 +84,6 @@ namespace OttoIconChanger
 
             if (Valid)
             {
-                // Load and sort the animation frames
                 // Load and sort the animation frames for multiple image types
                 string[] imagePaths = Directory.GetFiles(folderPath, "*.*")
                     .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||

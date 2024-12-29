@@ -46,6 +46,11 @@ namespace OttoIconChanger
                 OttoColorHexOff = ColorUtility.ToHtmlStringRGB(value);
             }
         }
+        //No Dark Otto When Off
+        public bool OttoGreyOffIsEnabled = false;
+        //No Nervous Otto
+        public bool NoNervousOttoIsEnabled = false;
+        public bool ResultForHighBpm = false;
         //Color Changer
         public bool OttoColorChangerIsEnabled = false;
         public bool OttoColorIndependentIsEnabled = false;
@@ -55,10 +60,22 @@ namespace OttoIconChanger
         public float OttoOpacityValue = 255f;
         public float OttoOpacityValueOn = 255f;
         public float OttoOpacityValueOff = 255f;
+        //Custom Otto Position & Size
+        public bool OttoPosChangerIsEnabled = false;
+        public bool OttoSizeChangerIsEnabled = false;
+        public bool SquareSizeIsEnabled = true;
+        public Vector2 originalOttoImageOffsetMin;
+        public Vector2 originalOttoImageOffsetMax;
+        public Vector2 originalOttoButtonOffsetMin;
+        public Vector2 originalOttoButtonOffsetMax;
+        public float PositionNewX;
+        public float PositionNewY;
+        public float NewOttoSizeX;
+        public float NewOttoSizeY;
         //Custom Otto Sprite
-        public readonly string[] OttoStates = new string[10]{"On", "Off", "LeftOn", "LeftOff", "RightOn", "RightOff",
-            "NervousOn", "NervousOff", "Pet", "Miss"};
-        public bool CustomeOttoImageIsEnabled = false;
+        public readonly string[] OttoStates = new string[10]{"On", "Off", "Left On", "Left Off", "Right On", "Right Off",
+            "Nervous On", "Nervous Off", "Pet", "Miss"};
+        public bool CustomOttoImageIsEnabled = false;
         public bool ResultForPaused;
         public int OttoBlinkCounter;
         public bool HaveBlink;
@@ -79,23 +96,6 @@ namespace OttoIconChanger
         public List<bool> LocalAnimationToggles = new List<bool>();
         public int AmountOfFramesOn = 0;
         public int AmountOfFramesOff = 0;
-        //No Dark Otto When Off
-        public bool OttoGreyOffIsEnabled = false;
-        //No Nervous Otto
-        public bool NoNervousOttoIsEnabled = false;
-        public bool ResultForHighBpm = false;
-        //Custom Otto Position & Size
-        public bool OttoPosChangerIsEnabled = false;
-        public bool OttoSizeChangerIsEnabled = false;
-        public bool SquareSizeIsEnabled = true;
-        public Vector2 originalOttoImageOffsetMin;
-        public Vector2 originalOttoImageOffsetMax;
-        public Vector2 originalOttoButtonOffsetMin;
-        public Vector2 originalOttoButtonOffsetMax;
-        public float PositionNewX;
-        public float PositionNewY;
-        public float NewOttoSizeX; 
-        public float NewOttoSizeY; 
 
         //Otto Characters enum list
         public enum OttoCharacter
@@ -144,6 +144,7 @@ namespace OttoIconChanger
             return 0f;
         }
 
+        //Initializes the list of all states' path
         public void InitializeList()
         {
             int targetCount = OttoStates.Length;
@@ -177,7 +178,6 @@ namespace OttoIconChanger
         }
         public void Apply(bool LoadBoth)
         {
-
             int index;
             if ((Main.setting.UseLocalImage && !Main.setting.UseLocalAnimation) || LoadBoth)
             {
@@ -228,6 +228,7 @@ namespace OttoIconChanger
                 }
             }
         }
+        //Method to set the Default States of state to specific ones at fire-time launch
         public void SetDefaultListValues()
         {
             if (!FirstTimeLoad)
@@ -242,6 +243,10 @@ namespace OttoIconChanger
                 LocalImageSetDefaults[5] = 1;
                 LocalAnimationSetDefaults[7] = 1;
                 LocalImageSetDefaults[7] = 1;
+                LocalAnimationSetDefaults[8] = 10;
+                LocalImageSetDefaults[8] = 10;
+                LocalAnimationSetDefaults[9] = 10;
+                LocalImageSetDefaults[8] = 10;
                 FirstTimeLoad = true;
             }
         }

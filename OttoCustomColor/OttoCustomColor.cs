@@ -1,16 +1,14 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace OttoIconChanger
 {
     public static class OttoCustomColor
     {
+        //Otto Color Changer, many methods are taken from AdofaiTweaks
         public static void ColorAndOpacitySettings()
         {
             GUILayout.Space(5); // Add space between sections
-
-            //Otto Color Changer, many methods are taken from AdofaiTweaks
             Color OttoNewColor;
             string OttoNewHex;
             Color OttoNewColorOn;
@@ -19,7 +17,6 @@ namespace OttoIconChanger
             string OttoNewHexOff;
 
             //Color Changer
-
             Main.setting.OttoColorChangerIsEnabled = GUILayout.Toggle(Main.setting.OttoColorChangerIsEnabled, "Otto Color Changer");
             if (Main.setting.OttoColorChangerIsEnabled)
             {
@@ -81,7 +78,6 @@ namespace OttoIconChanger
             GUILayout.Space(5); // Add space between sections
 
             //Opacity Changer
-
             Main.setting.OttoOpacityChangerIsEnabled = GUILayout.Toggle(Main.setting.OttoOpacityChangerIsEnabled, "Otto Opacity Changer");
             if (Main.setting.OttoOpacityChangerIsEnabled)
             {
@@ -89,6 +85,8 @@ namespace OttoIconChanger
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(20f); // Add horizontal space for indentation
                 GUILayout.BeginVertical(); // Nested layout for content
+
+                // If OttoOpacityIndependent is false, Opacity will be applied to both On and Off
                 if (!Main.setting.OttoOpacityIndependentIsEnabled)
                 {
                     // Create a slider for alpha, with a label "Opacity:" and range from 0 (transparent) to 255 (opaque)
@@ -99,9 +97,9 @@ namespace OttoIconChanger
                         // Set new opacity value (normalized from 0 to 1) and apply it to the color
                         Main.setting.OttoOpacityValue = newAlpha;
                     }
+
                     // Get the text from the opacity field as a string
                     string newAlphaText = MoreGUILayout.NamedTextField("A:", Main.setting.OttoOpacityValue.ToString("F0"), 100f, 40f);
-
                     // Try to parse the text field input to a float
                     if (float.TryParse(newAlphaText, out float parsedAlpha))
                     {
@@ -115,9 +113,9 @@ namespace OttoIconChanger
                         }
                     }
                 }
+                // If OttoOpacityIndependent is true, handle opacity for each state separately (On / Off)
                 if (Main.setting.OttoOpacityIndependentIsEnabled)
                 {
-                    // If OttoOpacityIndependent is true, handle opacity for each state separately (On / Off)
                     // Use the existing sliders for single opacity values
                     GUILayout.BeginHorizontal();
                     float newOpacityOn = MoreGUILayout.NamedSlider("Opacity Otto On:", Main.setting.OttoOpacityValueOn, 0, 255, 300f, 1, 100f);
@@ -125,6 +123,7 @@ namespace OttoIconChanger
                     {
                         Main.setting.OttoOpacityValueOn = Mathf.Clamp(newOpacityOn, 0f, 255f);
                     }
+
                     // Same for the Off opacity value
                     float newOpacityOff = MoreGUILayout.NamedSlider("Opacity Otto Off:", Main.setting.OttoOpacityValueOff, 0, 255, 300f, 1, 100f);
                     if (Main.setting.OttoOpacityValueOff != newOpacityOff)
@@ -132,6 +131,7 @@ namespace OttoIconChanger
                         Main.setting.OttoOpacityValueOff = Mathf.Clamp(newOpacityOff, 0f, 255f);
                     }
                     GUILayout.EndHorizontal();
+
                     // Get the text from the opacity field as a string
                     GUILayout.BeginHorizontal();
                     string newAlphaTextOn = MoreGUILayout.NamedTextField("A:", Main.setting.OttoOpacityValueOn.ToString("F0"), 100f, 40f);
@@ -147,6 +147,7 @@ namespace OttoIconChanger
                             Main.setting.OttoOpacityValueOn = parsedAlphaOn;
                         }
                     }
+
                     // Get the text from the opacity field as a string
                     string newAlphaTextOff = MoreGUILayout.NamedTextField("A:", Main.setting.OttoOpacityValueOff.ToString("F0"), 100f, 40f);
                     // Try to parse the text field input to a float
@@ -170,8 +171,10 @@ namespace OttoIconChanger
         }
         public static void OttoColorChanger(Image autoImage)
         {
-            Color OttoColor = Patch.setting.ResultForHighBpm ? Color.red : Color.white;
             if (autoImage == null) return;
+
+            //Default Color
+            Color OttoColor = Patch.setting.ResultForHighBpm ? Color.red : Color.white;
 
             // Determine the color to apply based on the independent color setting
             if (Patch.setting.OttoColorChangerIsEnabled)
@@ -187,11 +190,12 @@ namespace OttoIconChanger
                     OttoColor = Patch.setting.Ottocolor;
                 }
             }
+
+            // Darken if No Dark Otto is disabled and Otto is off
             if (!RDC.auto)
             {
                 if (!Patch.setting.OttoGreyOffIsEnabled)
                 {
-                    // Darken if No Dark Otto is disabled and Otto is off
                     OttoColor *= Color.gray;
                 }
             }
@@ -203,6 +207,7 @@ namespace OttoIconChanger
         {
             if (autoImage == null) return;
 
+            //If OttoOpacityIndependent is false
             if (Patch.setting.OttoOpacityChangerIsEnabled && !Patch.setting.OttoOpacityIndependentIsEnabled)
             {
                 // Create a new color with the same RGB values but with updated alpha
@@ -210,6 +215,8 @@ namespace OttoIconChanger
                 newColor.a = Patch.setting.OttoOpacityValue / 255f; // Normalize from 0–255 to 0–1 range
                 autoImage.color = newColor; // Assign the modified color back to autoImage
             }
+
+            //If OttoOpacityIndependent is true
             else if (Patch.setting.OttoOpacityChangerIsEnabled && Patch.setting.OttoOpacityIndependentIsEnabled)
             {
                 // Create a new color with the same RGB values but with updated alpha

@@ -31,10 +31,111 @@
             }
             return spriteToReturn;
         }
-        public static T SetDefaultCheck<T>(int Check, T On = default, T Off = default, T LeftOn = default, T LeftOff = default, T RightOn = default, T RightOff = default,
-            T NervousOn = default, T NervousOff = default, T Pet = default, T Miss = default)
+        private static T HandleNonSpecialBlinkCounters<T>(scnEditor scnEditor,
+            T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
         {
-            switch(Check)
+            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
+            bool useLocalImage = Patch.setting.UseLocalImage;
+            if (RDEditorUtils.CheckPointerInObject(scnEditor.buttonAuto))
+            {
+                Patch.OttoPetUpdateHelper.UpdateOttoPetTime(scnEditor);
+            }
+            else
+            {
+                Patch.setting.ottoPetTime = 0f;
+            }
+            if (RDC.auto)
+            {
+                if (!ADOBase.editor.autoFailed)
+                {
+                    if (Patch.setting.ottoPetTime < 1.5f)
+                    {
+                        if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
+                        {
+                            return ReturnSprite(NervousOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[6] : Patch.setting.LocalImageSetDefaults[6],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss), 
+                                useLocalAnimation, useLocalImage, 6, On, Off);
+                        }
+                        return ReturnSprite(On, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[0] : Patch.setting.LocalImageSetDefaults[0],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 0, On, Off);
+                    }
+                    return ReturnSprite(Pet, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[8] : Patch.setting.LocalImageSetDefaults[8],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 8, On, Off);
+                }
+                return ReturnSprite(Miss, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[9] : Patch.setting.LocalImageSetDefaults[9],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 9, On, Off);
+            }
+            else
+            {
+                if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
+                {
+                    return ReturnSprite(NervousOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[7] : Patch.setting.LocalImageSetDefaults[7],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 7, On, Off);
+                }
+                return ReturnSprite(Off, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[1] : Patch.setting.LocalImageSetDefaults[1],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 1, On, Off);
+            }
+        }
+        
+        private static T HandleSpecialBlinkCounters<T>(
+            int blinkCounter, T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
+        {
+            T spriteToReturn;
+            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
+            bool useLocalImage = Patch.setting.UseLocalImage;
+            switch (blinkCounter)
+            {
+                case 2:
+                    spriteToReturn = ReturnSprite(LeftOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[2] : Patch.setting.LocalImageSetDefaults[2],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 2, On, Off);
+                    break;
+                case 3:
+                    spriteToReturn = ReturnSprite(RightOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[4] : Patch.setting.LocalImageSetDefaults[4],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 4, On, Off);
+                    break;
+                case 4:
+                    spriteToReturn = ReturnSprite(LeftOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[3] : Patch.setting.LocalImageSetDefaults[3],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 3, On, Off);
+                    break;
+                case 5:
+                    spriteToReturn = ReturnSprite(RightOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
+                                Patch.setting.LocalAnimationSetDefaults[5] : Patch.setting.LocalImageSetDefaults[5],
+                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
+                                useLocalAnimation, useLocalImage, 5, On, Off);
+                    break;
+                default:
+                    spriteToReturn = RDC.auto ? ReturnSprite(On, 
+                        SetDefaultCheck(Check: Patch.setting.UseLocalAnimation 
+                        ? Patch.setting.LocalAnimationSetDefaults[0] : Patch.setting.LocalImageSetDefaults[0], On: On), 
+                        useLocalAnimation, useLocalImage, 0, On, Off) : ReturnSprite(Off, 
+                        SetDefaultCheck(Check: Patch.setting.UseLocalAnimation 
+                        ? Patch.setting.LocalAnimationSetDefaults[1] : Patch.setting.LocalImageSetDefaults[1], Off: Off), 
+                        useLocalAnimation, useLocalImage, 1, On, Off);
+                    break;
+            }
+            return spriteToReturn;
+        }
+        public static T SetDefaultCheck<T>(int Check, T On = default, T Off = default, T LeftOn = default, T LeftOff = default, T RightOn = default, T RightOff = default,
+    T NervousOn = default, T NervousOff = default, T Pet = default, T Miss = default)
+        {
+            switch (Check)
             {
                 case 0:
                     return On;
@@ -53,16 +154,18 @@
                 case 7:
                     return NervousOff;
                 case 8:
+                    return Pet;
+                case 9:
                     return Miss;
                 default:
                     return default;
             }
         }
-        private static T ReturnSprite<T>(T Sprite, T DefaultSprite, bool LocalAnimation, bool LocalImage, int Index)
+        private static T ReturnSprite<T>(T Sprite, T DefaultSprite, bool LocalAnimation, bool LocalImage, int Index, T On, T Off)
         {
             bool IsNullOrDefault(T value)
             {
-                return value == null || (value is int intValue && intValue == 1);
+                return value == null || (value is int intValue && (intValue == 1 || intValue == 0));
             }
 
             if (!IsNullOrDefault(Sprite))
@@ -99,107 +202,15 @@
             }
             else
             {
-                return !IsNullOrDefault(DefaultSprite) ? DefaultSprite : default;
-            }
-        }
-        private static T HandleNonSpecialBlinkCounters<T>(scnEditor scnEditor,
-            T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
-        {
-            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
-            bool useLocalImage = Patch.setting.UseLocalImage;
-            if (RDEditorUtils.CheckPointerInObject(scnEditor.buttonAuto))
-            {
-                Patch.OttoPetUpdateHelper.UpdateOttoPetTime(scnEditor);
-            }
-            else
-            {
-                Patch.setting.ottoPetTime = 0f;
-            }
-            if (RDC.auto)
-            {
-                if (!ADOBase.editor.autoFailed)
+                if (LocalImage)
                 {
-                    if (Patch.setting.ottoPetTime < 1.5f)
-                    {
-                        if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
-                        {
-                            return ReturnSprite(NervousOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[6] : Patch.setting.LocalImageSetDefaults[6],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss), 
-                                useLocalAnimation, useLocalImage, 6);
-                        }
-                        return ReturnSprite(On, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[0] : Patch.setting.LocalImageSetDefaults[0],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 0);
-                    }
-                    return ReturnSprite(Pet, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[8] : Patch.setting.LocalImageSetDefaults[8],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 8);
+                    return !IsNullOrDefault(DefaultSprite) ? DefaultSprite : default;
                 }
-                return ReturnSprite(Miss, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[9] : Patch.setting.LocalImageSetDefaults[9],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 9);
-            }
-            else
-            {
-                if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
+                else
                 {
-                    return ReturnSprite(NervousOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[7] : Patch.setting.LocalImageSetDefaults[7],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 7);
+                    return RDC.auto ? On : Off;
                 }
-                return ReturnSprite(Off, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[1] : Patch.setting.LocalImageSetDefaults[1],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 1);
             }
-        }
-        
-        private static T HandleSpecialBlinkCounters<T>(
-            int blinkCounter, T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
-        {
-            T spriteToReturn;
-            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
-            bool useLocalImage = Patch.setting.UseLocalImage;
-            switch (blinkCounter)
-            {
-                case 2:
-                    spriteToReturn = ReturnSprite(LeftOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[2] : Patch.setting.LocalImageSetDefaults[2],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 2);
-                    break;
-                case 3:
-                    spriteToReturn = ReturnSprite(RightOn, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[4] : Patch.setting.LocalImageSetDefaults[4],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 4);
-                    break;
-                case 4:
-                    spriteToReturn = ReturnSprite(LeftOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[3] : Patch.setting.LocalImageSetDefaults[3],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 3);
-                    break;
-                case 5:
-                    spriteToReturn = ReturnSprite(RightOff, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[5] : Patch.setting.LocalImageSetDefaults[5],
-                                On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
-                                useLocalAnimation, useLocalImage, 5);
-                    break;
-                default:
-                    spriteToReturn = RDC.auto ? ReturnSprite(On, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[0] : Patch.setting.LocalImageSetDefaults[0],
-                                On: On), useLocalAnimation, useLocalImage, 0) : ReturnSprite(Off, SetDefaultCheck(Check: Patch.setting.UseLocalAnimation ?
-                                Patch.setting.LocalAnimationSetDefaults[1] : Patch.setting.LocalImageSetDefaults[1],
-                                Off: Off), useLocalAnimation, useLocalImage, 1);
-                    break;
-            }
-            return spriteToReturn;
         }
     }
 }

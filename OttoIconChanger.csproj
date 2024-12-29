@@ -43,6 +43,9 @@
     <Reference Include="Assembly-CSharp-firstpass">
       <HintPath>..\..\..\..\Adofai Folders\Version\Adofai Latest\A Dance of Fire and Ice_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
+    <Reference Include="DOTween">
+      <HintPath>..\..\..\..\Adofai Folders\Version\Adofai Latest\A Dance of Fire and Ice_Data\Managed\DOTween.dll</HintPath>
+    </Reference>
     <Reference Include="RDTools">
       <HintPath>..\..\..\..\Adofai Folders\Version\Adofai Latest\A Dance of Fire and Ice_Data\Managed\RDTools.dll</HintPath>
     </Reference>

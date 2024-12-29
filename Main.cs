@@ -37,7 +37,6 @@ namespace OttoIconChanger
                 setting.InitializeList();
                 setting.SetDefaultListValues();
                 setting.Apply(true);
-                setting.Apply(true);
                 modEntry.OnGUI = OnGUI;
                 modEntry.OnSaveGUI = OnSaveGUI;
             }

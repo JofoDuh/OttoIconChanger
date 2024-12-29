@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SA.GoogleDoc;
+using System;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 using static OttoIconChanger.Setting;
@@ -12,8 +14,8 @@ namespace OttoIconChanger
             GUILayout.Space(5); // Add space between sections
             //Custom Otto Sprites
 
-            Main.setting.CustomeOttoImageIsEnabled = GUILayout.Toggle(Main.setting.CustomeOttoImageIsEnabled, "Custom Otto Sprites");
-            if (Main.setting.CustomeOttoImageIsEnabled)
+            Main.setting.CustomOttoImageIsEnabled = GUILayout.Toggle(Main.setting.CustomOttoImageIsEnabled, "Custom Otto Sprites");
+            if (Main.setting.CustomOttoImageIsEnabled)
             {
                 // Begin an indented section
                 GUILayout.BeginHorizontal();
@@ -21,10 +23,10 @@ namespace OttoIconChanger
                 GUILayout.BeginVertical(); // Nested layout for content
 
                 //Public Use:
-                Main.setting.UseLocalImage = true;
+                //Main.setting.UseLocalImage = true;
 
                 //Friend Use:
-                //Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
+                Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
 
                 // Static Image Selection Section
                 if (!Main.setting.UseLocalImage)
@@ -102,25 +104,33 @@ namespace OttoIconChanger
                         }
                         GUILayout.Label("Image Paths:");
                         int index1 = 0;
+                        int index = 0;
                         foreach (string state in Main.setting.OttoStates)
                         {
+                            if (index % 2 == 0) GUILayout.BeginHorizontal();
+                            GUILayout.BeginVertical();
                             Main.setting.LocalImageToggles[index1] = GUILayout.Toggle(Main.setting.LocalImageToggles[index1],
-                                Main.setting.LocalImageToggles[index1] ? $"{Main.setting.OttoStates[index1]}:" : Main.setting.OttoStates[index1]);
+                                Main.setting.OttoStates[index1], GUILayout.Width(700f));
                             if (Main.setting.LocalImageToggles[index1])
                             {
                                 GUILayout.BeginHorizontal();
-                                GUILayout.Space(30f);
+                                GUILayout.Space(20f);
                                 GUILayout.BeginVertical();
+
                                 Main.setting.LocalImagePaths[index1] = MoreGUILayout.PathAndBrowse
                                     ("Path:", Main.setting.LocalImagePaths[index1], 500, false);
                                 // Workaround for ref usage with array elements
                                 int tempState = Main.setting.LocalImageSetDefaults[index1]; // Local variable to hold the current state
                                 MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                GUILayout.EndVertical();
                                 Main.setting.LocalImageSetDefaults[index1] = tempState; // Write back the updated state
+
+                                GUILayout.EndVertical();
                                 GUILayout.EndHorizontal();
                             }
+                            GUILayout.EndVertical();
                             index1++;
+                            if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
+                            index++;
                         }
                     }
                     else
@@ -132,32 +142,39 @@ namespace OttoIconChanger
                         }
                         GUILayout.Label("Folder Paths:");
                         int index1 = 0;
+                        int index = 0;
                         foreach (string state in Main.setting.OttoStates)
                         {
+                            if (index % 2 == 0) GUILayout.BeginHorizontal();
+                            GUILayout.BeginVertical();
                             Main.setting.LocalAnimationToggles[index1] = GUILayout.Toggle
-                                (Main.setting.LocalAnimationToggles[index1], Main.setting.OttoStates[index1]);
+                                (Main.setting.LocalAnimationToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
                             if (Main.setting.LocalAnimationToggles[index1])
                             {
                                 GUILayout.BeginHorizontal();
-                                GUILayout.Space(30f);
+                                GUILayout.Space(20f);
                                 GUILayout.BeginVertical();
+
                                 Main.setting.LocalAnimationFolderPaths[index1] = MoreGUILayout.PathAndBrowse
                                     ("Path:", Main.setting.LocalAnimationFolderPaths[index1], 500, true);
                                 // Workaround for ref usage with array elements
                                 int tempState = Main.setting.LocalAnimationSetDefaults[index1]; // Local variable to hold the current state
                                 MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                GUILayout.EndVertical();
                                 Main.setting.LocalAnimationSetDefaults[index1] = tempState; // Write back the updated state
+                                
+                                GUILayout.EndVertical();
                                 GUILayout.EndHorizontal();
-
                             }
+                            GUILayout.EndVertical();
                             index1++;
+                            if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
+                            index++;
                         }
                     }
                 }
-
                 if (Main.setting.UseLocalAnimation || (!Main.setting.UseLocalAnimation && !Main.setting.UseLocalImage))
                 {
+                    GUILayout.Space(10f);
                     // Toggle to switch between Seconds-based or Frame-based values
                     Main.setting.FrameBasedValuesIsEnabled = GUILayout.Toggle(Main.setting.FrameBasedValuesIsEnabled, "Use Frame-Based Values");
                     if (!Main.setting.FrameBasedValuesIsEnabled)
@@ -217,11 +234,12 @@ namespace OttoIconChanger
 
         private static int animationIndex = 0;
         private static float lastFrameTime = 0f;
-        public static void LoadImageAnimation(Image autoImage, bool IsBlink, scnEditor scnEditor)
-        {
-            if (autoImage == null) return;
 
-            Sprite activeSprites = null;
+        public static bool LoadCustomSprite(Image autoImage, bool IsBlink, scnEditor scnEditor)
+        {
+            if (autoImage == null) return true;
+
+            Sprite activeSprite = null;
             int currentMaxFrames = 1;
 
             // Calculate frame interval dynamically
@@ -229,11 +247,11 @@ namespace OttoIconChanger
                 ? (Patch.setting.FramesPerSecond > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
                 : Patch.setting.SecondsPerSpriteChange;
 
-            // Check which character is selected
-            if (Patch.setting.UseLocalAnimation && Patch.setting.UseLocalImage)
+            if (Main.setting.UseLocalImage)
             {
-
-                activeSprites = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                if (Main.setting.UseLocalAnimation)
+                {
+                    activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
                     BundleLoader.BundleLoader.CustomAniOttoSprites[0][StateAssigner.ApplyOverflowLogic(animationIndex,
                     BundleLoader.BundleLoader.CustomAniOttoSprites[0].Length)],
                     BundleLoader.BundleLoader.CustomAniOttoSprites[1][StateAssigner.ApplyOverflowLogic(animationIndex,
@@ -255,117 +273,114 @@ namespace OttoIconChanger
                     BundleLoader.BundleLoader.CustomAniOttoSprites[9][StateAssigner.ApplyOverflowLogic(animationIndex,
                     BundleLoader.BundleLoader.CustomAniOttoSprites[9].Length)]);
 
-                currentMaxFrames = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[0].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[1].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[2].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[3].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[4].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[5].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[6].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[7].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[8].Length,
-                    BundleLoader.BundleLoader.CustomAniOttoSprites[9].Length);
+                    currentMaxFrames = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[0].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[1].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[2].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[3].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[4].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[5].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[6].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[7].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[8].Length,
+                        BundleLoader.BundleLoader.CustomAniOttoSprites[9].Length);
+                }
+                else
+                {
+                    activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                        BundleLoader.BundleLoader.CustomOttoSprites[0], // OttoOn
+                        BundleLoader.BundleLoader.CustomOttoSprites[1], // OttoOff
+                        BundleLoader.BundleLoader.CustomOttoSprites[2], // OttoLeftOn
+                        BundleLoader.BundleLoader.CustomOttoSprites[3], // OttoLeftOff
+                        BundleLoader.BundleLoader.CustomOttoSprites[4], // OttoRightOn
+                        BundleLoader.BundleLoader.CustomOttoSprites[5], // OttoRightOff
+                        BundleLoader.BundleLoader.CustomOttoSprites[6], // OttoNervousOn
+                        BundleLoader.BundleLoader.CustomOttoSprites[7], // OttoNervousOff
+                        BundleLoader.BundleLoader.CustomOttoSprites[8], // OttoPet
+                        BundleLoader.BundleLoader.CustomOttoSprites[9]  // OttoMiss
+                    );
+                }
             }
             else
             {
-                switch (Patch.setting.SelectedCharacter)
+                if (Main.setting.IsAnimatedCharacterSelected())
                 {
-                    case OttoCharacter.FireFlyAnimated:
+                    switch (Patch.setting.SelectedCharacter)
+                    {
+                        case OttoCharacter.FireFlyAnimated:
 
-                        activeSprites = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                            BundleLoader.BundleLoader.FireFlyOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.FireFlyOttoOn.Length)],
-                            BundleLoader.BundleLoader.FireFlyOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.FireFlyOttoOff.Length)]);
-                        currentMaxFrames = 12;
-                        break;
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                                BundleLoader.BundleLoader.FireFlyOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.FireFlyOttoOn.Length)],
+                                BundleLoader.BundleLoader.FireFlyOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.FireFlyOttoOff.Length)]);
+                            currentMaxFrames = 12;
+                            break;
 
-                    case OttoCharacter.HuTaoAnimated:
+                        case OttoCharacter.HuTaoAnimated:
 
-                        activeSprites = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                            BundleLoader.BundleLoader.HuTaoOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.HuTaoOttoOn.Length)],
-                            BundleLoader.BundleLoader.HuTaoOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.HuTaoOttoOff.Length)]);
-                        currentMaxFrames = 8;
-                        break;
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                                BundleLoader.BundleLoader.HuTaoOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.HuTaoOttoOn.Length)],
+                                BundleLoader.BundleLoader.HuTaoOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.HuTaoOttoOff.Length)]);
+                            currentMaxFrames = 8;
+                            break;
 
-                    case OttoCharacter.SparkleAnimated:
+                        case OttoCharacter.SparkleAnimated:
 
-                        activeSprites = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                            BundleLoader.BundleLoader.SparkleOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.SparkleOttoOn.Length)],
-                            BundleLoader.BundleLoader.SparkleOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.SparkleOttoOff.Length)]);
-                        currentMaxFrames = 12;
-                        break;
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                                BundleLoader.BundleLoader.SparkleOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.SparkleOttoOn.Length)],
+                                BundleLoader.BundleLoader.SparkleOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.SparkleOttoOff.Length)]);
+                            currentMaxFrames = 12;
+                            break;
 
-                    case OttoCharacter.FurinaAnimated:
-                        activeSprites = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                            BundleLoader.BundleLoader.FurinaAniOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.FurinaAniOttoOn.Length)],
-                            BundleLoader.BundleLoader.FurinaAniOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
-                    BundleLoader.BundleLoader.FurinaAniOttoOff.Length)]
-                        );
-                        currentMaxFrames = StateAssigner.AssignSprite(scnEditor, IsBlink, 
-                            BundleLoader.BundleLoader.FurinaAniOttoOn.Length,
-                            BundleLoader.BundleLoader.FurinaAniOttoOff.Length); // Set max frames for Furina animation
-                        break;
-                        // Add additional character cases if needed, following the same pattern
+                        case OttoCharacter.FurinaAnimated:
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                                BundleLoader.BundleLoader.FurinaAniOttoOn[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.FurinaAniOttoOn.Length)],
+                                BundleLoader.BundleLoader.FurinaAniOttoOff[StateAssigner.ApplyOverflowLogic(animationIndex,
+                        BundleLoader.BundleLoader.FurinaAniOttoOff.Length)]
+                            );
+                            currentMaxFrames = StateAssigner.AssignSprite(scnEditor, IsBlink,
+                                BundleLoader.BundleLoader.FurinaAniOttoOn.Length,
+                                BundleLoader.BundleLoader.FurinaAniOttoOff.Length); // Set max frames for Furina animation
+                            break;
+                            // Add additional character cases if needed, following the same pattern
+                    }
+                }
+                else
+                {
+                    switch (Patch.setting.SelectedCharacter)
+                    {
+                        case OttoCharacter.FurinaNonAnimated:
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink, BundleLoader.BundleLoader.FurinaOttoOn, BundleLoader.BundleLoader.FurinaOttoOff);
+                            break;
+                        case OttoCharacter.ElysiaNonAnimated:
+                            activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink, BundleLoader.BundleLoader.ElysiaOttoOn, BundleLoader.BundleLoader.ElysiaOttoOff);
+                            break;
+                    }
                 }
             }
-            if (currentMaxFrames <= 0) currentMaxFrames++;
-            // Update animation index based on time
-            if (Time.realtimeSinceStartup - lastFrameTime >= frameInterval)
+            if ((Main.setting.UseLocalImage && Main.setting.UseLocalAnimation) || (Main.setting.IsAnimatedCharacterSelected() && !Main.setting.UseLocalImage))
             {
-                animationIndex = (animationIndex + 1) % currentMaxFrames; // Increment and wrap animationIndex
-                lastFrameTime = Time.realtimeSinceStartup; // Update to the current real time
+                if (currentMaxFrames <= 0) currentMaxFrames++;
+                // Update animation index based on time
+                if (Time.realtimeSinceStartup - lastFrameTime >= frameInterval)
+                {
+                    animationIndex = (animationIndex + 1) % currentMaxFrames; // Increment and wrap animationIndex
+                    lastFrameTime = Time.realtimeSinceStartup; // Update to the current real time
+                }
             }
             // Animation logic
-            if (activeSprites != null)
+            if (activeSprite != null)
             {
-                autoImage.sprite = activeSprites; // Override the image sprite of Otto
+                autoImage.sprite = activeSprite; // Override the image sprite of Otto
+                return false;
             }
-        }
-
-        public static void LoadImage(Image autoImage, bool IsBlink, scnEditor scnEditor)
-        {
-            if (autoImage == null) return;
-
-            Sprite ActiveSprite = null;
-
-            if (Patch.setting.UseLocalImage)
-            {
-                ActiveSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
-                    BundleLoader.BundleLoader.CustomOttoSprites[0], // OttoOn
-                    BundleLoader.BundleLoader.CustomOttoSprites[1], // OttoOff
-                    BundleLoader.BundleLoader.CustomOttoSprites[2], // OttoLeftOn
-                    BundleLoader.BundleLoader.CustomOttoSprites[3], // OttoLeftOff
-                    BundleLoader.BundleLoader.CustomOttoSprites[4], // OttoRightOn
-                    BundleLoader.BundleLoader.CustomOttoSprites[5], // OttoRightOff
-                    BundleLoader.BundleLoader.CustomOttoSprites[6], // OttoNervousOn
-                    BundleLoader.BundleLoader.CustomOttoSprites[7], // OttoNervousOff
-                    BundleLoader.BundleLoader.CustomOttoSprites[8], // OttoPet
-                    BundleLoader.BundleLoader.CustomOttoSprites[9]  // OttoMiss
-                );
-            }
-            else
-            {
-                switch (Patch.setting.SelectedCharacter)
-                {
-                    case OttoCharacter.FurinaNonAnimated:
-                        ActiveSprite = StateAssigner.AssignSprite(scnEditor, IsBlink, BundleLoader.BundleLoader.FurinaOttoOn, BundleLoader.BundleLoader.FurinaOttoOff);
-                        break;
-                    case OttoCharacter.ElysiaNonAnimated:
-                        ActiveSprite = StateAssigner.AssignSprite(scnEditor, IsBlink, BundleLoader.BundleLoader.ElysiaOttoOn, BundleLoader.BundleLoader.ElysiaOttoOff);
-                        break;
-                }
-            }
-            if (ActiveSprite != null)
-            {
-                autoImage.sprite = ActiveSprite;
-            }
+            else return true;
         }
     }
 }
