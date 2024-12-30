@@ -23,10 +23,10 @@ namespace OttoIconChanger
                 GUILayout.BeginVertical(); // Nested layout for content
 
                 //Public Use:
-                //Main.setting.UseLocalImage = true;
+                Main.setting.UseLocalImage = true;
 
                 //Friend Use:
-                Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
+                //Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
 
                 // Static Image Selection Section
                 if (!Main.setting.UseLocalImage)

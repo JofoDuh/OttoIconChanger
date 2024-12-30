@@ -203,7 +203,7 @@ namespace OttoIconChanger
                     index++;
                 }
             }
-            if (Main.setting.UseLocalAnimation || LoadBoth)
+            if ((Main.setting.UseLocalAnimation && Main.setting.UseLocalImage) || LoadBoth)
             {
                 index = 0;
                 // Check if folder paths are valid for animation
