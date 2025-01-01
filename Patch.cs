@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG;
 using DG.Tweening;
+using System;
 
 namespace OttoIconChanger
 {
@@ -97,6 +98,8 @@ namespace OttoIconChanger
             public static void Postfix(scnEditor __instance)
             {
                 Image autoImage = __instance.autoImage;
+                bool isHighBPM = (bool)typeof(scnEditor).GetProperty("highBPM", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(__instance);
+
                 OttoCustomColor.OttoColorChanger(autoImage);
                 if (setting.OttoOpacityChangerIsEnabled)
                 {
