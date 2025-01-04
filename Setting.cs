@@ -10,7 +10,7 @@ namespace OttoIconChanger
     public class Setting : UnityModManager.ModSettings
     {
         //General
-        bool FirstTimeLoad = false;
+        public int FirstTimeLoad = 0;
         //From AdofaiTweaks
         public bool EditorIsAwake = false;
         public string OttoColorHex { get; set; } = "FFFFFF";
@@ -231,24 +231,20 @@ namespace OttoIconChanger
         //Method to set the Default States of state to specific ones at fire-time launch
         public void SetDefaultListValues()
         {
-            if (!FirstTimeLoad)
-            {
-                LocalAnimationSetDefaults[0] = 10;
-                LocalImageSetDefaults[0] = 10;
-                LocalAnimationSetDefaults[1] = 10;
-                LocalImageSetDefaults[1] = 10;
-                LocalAnimationSetDefaults[3] = 1;
-                LocalImageSetDefaults[3] = 1;
-                LocalAnimationSetDefaults[5] = 1;
-                LocalImageSetDefaults[5] = 1;
-                LocalAnimationSetDefaults[7] = 1;
-                LocalImageSetDefaults[7] = 1;
-                LocalAnimationSetDefaults[8] = 10;
-                LocalImageSetDefaults[8] = 10;
-                LocalAnimationSetDefaults[9] = 10;
-                LocalImageSetDefaults[8] = 10;
-                FirstTimeLoad = true;
-            }
+            LocalAnimationSetDefaults[0] = 10;
+            LocalImageSetDefaults[0] = 10;
+            LocalAnimationSetDefaults[1] = 10;
+            LocalImageSetDefaults[1] = 10;
+            LocalAnimationSetDefaults[3] = 1;
+            LocalImageSetDefaults[3] = 1;
+            LocalAnimationSetDefaults[5] = 1;
+            LocalImageSetDefaults[5] = 1;
+            LocalAnimationSetDefaults[7] = 1;
+            LocalImageSetDefaults[7] = 1;
+            LocalAnimationSetDefaults[8] = 10;
+            LocalImageSetDefaults[8] = 10;
+            LocalAnimationSetDefaults[9] = 10;
+            LocalImageSetDefaults[8] = 10;
         }
         public override void Save(UnityModManager.ModEntry modEntry)
         {

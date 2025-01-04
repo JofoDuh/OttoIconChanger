@@ -13,7 +13,6 @@ namespace OttoIconChanger
     {
         public static Setting setting;
         private static bool isBlinking = false; // Flag to track blinking state
-        private static bool isNull;
 
         [HarmonyPatch(typeof(scnEditor), "OttoBlink")]
         public static class OttoBlinkPatch
@@ -22,11 +21,10 @@ namespace OttoIconChanger
             public static readonly FieldInfo ottoBlinkCounterField = typeof(scnEditor).GetField("ottoBlinkCounter", BindingFlags.NonPublic | BindingFlags.Instance);
 
             // Postfix method that runs after OttoBlink is called
-            public static bool Prefix(scnEditor __instance)
+            public static void Postfix(scnEditor __instance)
             {
-                if (ottoBlinkCounterField == null) return true;
+                if (ottoBlinkCounterField == null) return;
 
-                Sequence blinkTimer = __instance.blinkTimer;
                 // Get the current value of the 'ottoBlinkCounter' using the cached FieldInfo
                 int ottoBlinkCounter = (int)ottoBlinkCounterField.GetValue(__instance);
 
@@ -46,22 +44,12 @@ namespace OttoIconChanger
                 {
                     setting.OttoBlinkCounter = (ottoBlinkCounter % 2 == 0) ? 5 : 4;
                 }
-                ottoBlinkCounter++;
-
-                if (blinkTimer != null && blinkTimer.active)
-                {
-                    blinkTimer.Kill(false);
-                }
-                blinkTimer = DOTween.Sequence().AppendInterval(interval).OnComplete(delegate{isBlinking = false;})
-                    .SetUpdate(true).OnKill(delegate{isBlinking = false;});
 
                 if (setting.CustomOttoImageIsEnabled)
                 {
                     // Call BlinkCoroutine from OttoBlink
                     __instance.StartCoroutine(BlinkCoroutine(__instance.autoImage, interval, __instance));
-                    return isNull;
                 }
-                else return isNull;
             }
         }
         private static IEnumerator BlinkCoroutine(Image autoImage, float duration, scnEditor __instance)
@@ -72,9 +60,9 @@ namespace OttoIconChanger
             while (isBlinking)
             {
                 // Perform the action (blink start logic)
-                isNull = OttoCustomSprite.LoadCustomSprite(autoImage, true, __instance);
+                OttoCustomSprite.LoadCustomSprite(autoImage, true, __instance);
 
-                if (isNull) yield break;
+                //if (isNull) yield break;
                 // Check if the duration has elapsed
                 if (Time.realtimeSinceStartup - startTime >= duration)
                 {
@@ -84,7 +72,7 @@ namespace OttoIconChanger
                 yield return null; // Wait until the next frame
             }
             // Perform the ending action (blink end logic)
-            isNull = OttoCustomSprite.LoadCustomSprite(autoImage, false, __instance);
+            OttoCustomSprite.LoadCustomSprite(autoImage, false, __instance);
         }
 
         [HarmonyPatch(typeof(scnEditor), "OttoUpdate")]

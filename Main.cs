@@ -35,7 +35,11 @@ namespace OttoIconChanger
                 //Load the Assets
                 BundleLoader.BundleLoader.LoadCustomOttoSprite();
                 setting.InitializeList();
-                setting.SetDefaultListValues();
+                if (setting.FirstTimeLoad == 0)
+                {
+                    setting.SetDefaultListValues();
+                    setting.FirstTimeLoad = 1;
+                }
                 setting.Apply(true);
                 modEntry.OnGUI = OnGUI;
                 modEntry.OnSaveGUI = OnSaveGUI;

@@ -409,7 +409,7 @@ namespace OttoIconChanger
             if (activeSprite != null)
             {
                 autoImage.sprite = activeSprite; // Override the image sprite of Otto
-                return false;
+                return false; //Prevent OttoUpdate from assigning otto sprite
             }
             else return true;
         }
