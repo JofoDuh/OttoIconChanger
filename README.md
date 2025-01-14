@@ -40,8 +40,9 @@ Right On & Off (Nervous uses the same image):
 
 ![Right Image](./Images/otto_right.png) ![Right Image](./Images/otto_off_right.png)
 
-Pet: ![Pet Image](./Images/otto_happy.png)
+Pet: 
+![Pet Image](./Images/otto_happy.png)
 
-Miss: ![Miss Image](./Images/otto_miss.png)
-
+Miss: 
+![Miss Image](./Images/otto_miss.png)
 
