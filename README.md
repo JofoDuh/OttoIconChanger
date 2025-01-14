@@ -20,9 +20,9 @@ To make Otto animate. Choose an animated file of your choice (e.g., .gif or .mp4
 
 * Each state have a default state assigned, allowing you to reuse images for unassigned states. For example, if you set the default state for "NervousOn" to "On," the mod will use the image assigned to the "On" state. If no image is assigned to "On," the game will default to its original image.
 
-* Tip: Try to use too much frames as it can cause loading issue. Make sure there's no duplicated frames (e.g. 100 frames but in reality only 50 is needed for the full animation) and if you plan to use the same animation for multiple state then choose one state to load it and set the default state of the other states to the chosen state.
+* Tip: Try not to use too much frames as it can cause loading issue. Make sure there's no duplicated frames (e.g. 100 frames but in reality only 50 is needed for the full animation) and if you plan to use the same animation for multiple state then choose one state to load it and set the default state of the other states to the chosen state.
 
-## Otto States
+## Otto State
 
 On:
 
@@ -30,7 +30,8 @@ On:
 
 Off:
 (Nervous uses the same image)
-![On Image](./Images/otto_off.png)
+
+![Off Image](./Images/otto_off.png)
 
 Nervous On:
 
@@ -38,24 +39,30 @@ Nervous On:
 
 Left On:
 (Nervous uses the same image)
-![Left On Image](./Images/otto_on_left.png)
+
+![Left On Image](./Images/otto_left.png)
 
 Left Off:
 (Nervous uses the same image)
+
 ![Left Off Image](./Images/otto_off_left.png)
 
 Right On:
 (Nervous uses the same image)
-![Right On Image](./Images/otto_on_right.png)
+
+![Right On Image](./Images/otto_right.png)
 
 Right Off:
 (Nervous uses the same image)
+
 ![Right Off Image](./Images/otto_off_right.png)
 
 Pet:
 (Nervous uses the same image)
+
 ![Pet Image](./Images/otto_happy.png)
 
 Miss:
 (Nervous uses the same image)
+
 ![Miss Image](./Images/otto_miss.png)
