@@ -38,24 +38,30 @@ Nervous On:
 
 Left On:
 (Nervous uses the same image)
-![Left On Image](./Images/otto_on_left.png)
+
+![Left On Image](./Images/otto_left.png)
 
 Left Off:
 (Nervous uses the same image)
+
 ![Left Off Image](./Images/otto_off_left.png)
 
 Right On:
 (Nervous uses the same image)
-![Right On Image](./Images/otto_on_right.png)
+
+![Right On Image](./Images/otto_right.png)
 
 Right Off:
 (Nervous uses the same image)
+
 ![Right Off Image](./Images/otto_off_right.png)
 
 Pet:
 (Nervous uses the same image)
+
 ![Pet Image](./Images/otto_happy.png)
 
 Miss:
 (Nervous uses the same image)
+
 ![Miss Image](./Images/otto_miss.png)
