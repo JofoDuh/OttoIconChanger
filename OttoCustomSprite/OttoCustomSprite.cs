@@ -1,6 +1,4 @@
-﻿using SA.GoogleDoc;
-using System;
-using System.Reflection;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using static OttoIconChanger.Setting;
@@ -24,33 +22,6 @@ namespace OttoIconChanger
 
                 //Public Use:
                 Main.setting.UseLocalImage = true;
-                //Prevents the "On" paths from being loaded even when manually set in setting.xml 
-                int[] indicesToClear = { 0, 2, 4, 6 };
-
-                bool pathsAreNonEmpty;
-                do
-                {
-                    pathsAreNonEmpty = false;
-
-                    foreach (int index in indicesToClear)
-                    {
-                        if (Main.setting.LocalAnimationFolderPaths[index] != string.Empty || Main.setting.LocalImagePaths[index] != string.Empty)
-                        {
-                            Main.setting.LocalAnimationFolderPaths[index] = string.Empty;
-                            Main.setting.LocalImagePaths[index] = string.Empty;
-                            pathsAreNonEmpty = true; // At least one path was non-empty
-                        }
-                    }
-
-                    if (pathsAreNonEmpty)
-                    {
-                        Main.setting.Apply(true);
-                    }
-
-                } while (pathsAreNonEmpty);
-
-                //Friend Use:
-                //Main.setting.UseLocalImage = GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Images");
 
                 // Static Image Selection Section
                 if (!Main.setting.UseLocalImage)
@@ -131,32 +102,29 @@ namespace OttoIconChanger
                         int index = 0;
                         foreach (string state in Main.setting.OttoStates)
                         {
-                            //if (index % 2 == 0) GUILayout.BeginHorizontal();
-                            //GUILayout.BeginVertical();
-                            if (!(state == "On" || state == "Left On" || state == "Nervous On" || state == "Right On"))
+                            if (index % 2 == 0) GUILayout.BeginHorizontal();
+                            GUILayout.BeginVertical();
+                            Main.setting.LocalImageToggles[index1] = GUILayout.Toggle(Main.setting.LocalImageToggles[index1],
+                                Main.setting.OttoStates[index1], GUILayout.Width(700f));
+                            if (Main.setting.LocalImageToggles[index1])
                             {
-                                Main.setting.LocalImageToggles[index1] = GUILayout.Toggle(Main.setting.LocalImageToggles[index1],
-                                    Main.setting.OttoStates[index1], GUILayout.Width(700f));
-                                if (Main.setting.LocalImageToggles[index1])
-                                {
-                                    GUILayout.BeginHorizontal();
-                                    GUILayout.Space(20f);
-                                    GUILayout.BeginVertical();
+                                GUILayout.BeginHorizontal();
+                                GUILayout.Space(20f);
+                                GUILayout.BeginVertical();
 
-                                    Main.setting.LocalImagePaths[index1] = MoreGUILayout.PathAndBrowse
-                                        ("Path:", Main.setting.LocalImagePaths[index1], 500, false);
-                                    // Workaround for ref usage with array elements
-                                    int tempState = Main.setting.LocalImageSetDefaults[index1]; // Local variable to hold the current state
-                                    MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                    Main.setting.LocalImageSetDefaults[index1] = tempState; // Write back the updated state
+                                Main.setting.LocalImagePaths[index1] = MoreGUILayout.PathAndBrowse
+                                    ("Path:", Main.setting.LocalImagePaths[index1], 500, false);
+                                // Workaround for ref usage with array elements
+                                int tempState = Main.setting.LocalImageSetDefaults[index1]; // Local variable to hold the current state
+                                MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
+                                Main.setting.LocalImageSetDefaults[index1] = tempState; // Write back the updated state
 
-                                    GUILayout.EndVertical();
-                                    GUILayout.EndHorizontal();
-                                }
+                                GUILayout.EndVertical();
+                                GUILayout.EndHorizontal();
                             }
-                            //GUILayout.EndVertical();
+                            GUILayout.EndVertical();
                             index1++;
-                            //if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
+                            if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
                             index++;
                         }
                     }
@@ -172,33 +140,29 @@ namespace OttoIconChanger
                         int index = 0;
                         foreach (string state in Main.setting.OttoStates)
                         {
-                            //if (index % 2 == 0) GUILayout.BeginHorizontal();
-                            //GUILayout.BeginVertical();
-                            if (!(state == "On" || state == "Left On" || state == "Nervous On" || state == "Right On"))
+                            if (index % 2 == 0) GUILayout.BeginHorizontal();
+                            GUILayout.BeginVertical();
+                            Main.setting.LocalAnimationToggles[index1] = GUILayout.Toggle
+                                (Main.setting.LocalAnimationToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
+                            if (Main.setting.LocalAnimationToggles[index1])
                             {
-                                Main.setting.LocalAnimationToggles[index1] = GUILayout.Toggle
-                                    (Main.setting.LocalAnimationToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
-                                if (Main.setting.LocalAnimationToggles[index1])
-                                {
-                                    GUILayout.BeginHorizontal();
-                                    GUILayout.Space(20f);
-                                    GUILayout.BeginVertical();
+                                GUILayout.BeginHorizontal();
+                                GUILayout.Space(20f);
+                                GUILayout.BeginVertical();
 
-                                    Main.setting.LocalAnimationFolderPaths[index1] = MoreGUILayout.PathAndBrowse
-                                        ("Path:", Main.setting.LocalAnimationFolderPaths[index1], 500, true);
-                                    // Workaround for ref usage with array elements
-                                    int tempState = Main.setting.LocalAnimationSetDefaults[index1]; // Local variable to hold the current state
-                                    MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                    Main.setting.LocalAnimationSetDefaults[index1] = tempState; // Write back the updated state
+                                Main.setting.LocalAnimationFolderPaths[index1] = MoreGUILayout.PathAndBrowse
+                                    ("Path:", Main.setting.LocalAnimationFolderPaths[index1], 500, true);
+                                // Workaround for ref usage with array elements
+                                int tempState = Main.setting.LocalAnimationSetDefaults[index1]; // Local variable to hold the current state
+                                MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
+                                Main.setting.LocalAnimationSetDefaults[index1] = tempState; // Write back the updated state
 
-                                    GUILayout.EndVertical();
-                                    GUILayout.EndHorizontal();
-                                }
-
+                                GUILayout.EndVertical();
+                                GUILayout.EndHorizontal();
                             }
-                            //GUILayout.EndVertical();
+                            GUILayout.EndVertical();
                             index1++;
-                            //if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
+                            if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
                             index++;
                         }
                     }

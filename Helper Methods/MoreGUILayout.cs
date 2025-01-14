@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace OttoIconChanger
 {
@@ -138,13 +137,10 @@ namespace OttoIconChanger
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Height(100f)); // Increased dropdown height for better UX
                 for (int i = 0; i < options.Length; i++)
                 {
-                    if (!(i % 2 == 0) || i == 8)
+                    if (GUILayout.Button(options[i], GUILayout.Height(20f), GUILayout.Width(100f))) // Match dropdown button size
                     {
-                        if (GUILayout.Button(options[i], GUILayout.Height(20f), GUILayout.Width(100f))) // Match dropdown button size
-                        {
-                            selectedValue = i; // Update the selected value
-                            displayDropdowns[index] = false; // Close the dropdown
-                        }
+                        selectedValue = i; // Update the selected value
+                        displayDropdowns[index] = false; // Close the dropdown
                     }
                 }
                 if (GUILayout.Button("Default", GUILayout.Height(20f), GUILayout.Width(100f)))

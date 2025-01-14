@@ -3,9 +3,6 @@ using System.Collections;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
-using DG;
-using DG.Tweening;
-using System;
 
 namespace OttoIconChanger
 {
