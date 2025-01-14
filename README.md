@@ -30,6 +30,7 @@ On:
 
 Off:
 (Nervous uses the same image)
+
 ![Off Image](./Images/otto_off.png)
 
 Nervous On:
