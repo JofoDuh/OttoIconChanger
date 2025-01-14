@@ -26,34 +26,22 @@ To make Otto animate. Choose an animated file of your choice (e.g., .gif or .mp4
 
 On & Off:
 
-![Otto Image](./Images/otto_on.png)
-
-![Otto Image](./Images/otto_off.png)
+![Otto Image](./Images/otto_on.png) ![Otto Image](./Images/otto_off.png)
 
 Nervous On & Off (Instead of White, Red):
 
-![Nervous On Image](./Images/otto_nervous_on.png)
-
-![Nervous Off Image](./Images/otto_off.png)
+![Nervous On Image](./Images/otto_nervous_on.png) ![Nervous Off Image](./Images/otto_off.png)
 
 Left On & Off (Nervous uses the same image):
 
-![Left Image](./Images/otto_left.png)
-
-![Left Image](./Images/otto_off_left.png)
+![Left Image](./Images/otto_left.png) ![Left Image](./Images/otto_off_left.png)
 
 Right On & Off (Nervous uses the same image):
 
-![Right Image](./Images/otto_right.png)
+![Right Image](./Images/otto_right.png) ![Right Image](./Images/otto_off_right.png)
 
-![Right Image](./Images/otto_off_right.png)
+Pet: ![Pet Image](./Images/otto_happy.png)
 
-Pet:
-(Nervous uses the same image)
+Miss: ![Miss Image](./Images/otto_miss.png)
 
-![Pet Image](./Images/otto_happy.png)
 
-Miss:
-(Nervous uses the same image)
-
-![Miss Image](./Images/otto_miss.png)
