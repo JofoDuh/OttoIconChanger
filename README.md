@@ -22,6 +22,7 @@ To make Otto animate. Choose an animated file of your choice (e.g., .gif or .mp4
 
 * Tip: Try not to use too much frames as it can cause loading issue. Make sure there's no duplicated frames (e.g. 100 frames but in reality only 50 is needed for the full animation) and if you plan to use the same animation for multiple states then choose one state to load it and set the default state of the other states to the chosen state.
 
+* **Presets:** You can create a preset(s) of the current profile, type in the name and it will save all paths into a button.
 ## Otto States
 
 On & Off:

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
+﻿using System.Reflection;
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
@@ -35,12 +34,24 @@ namespace OttoIconChanger
                 //Load the Assets
                 BundleLoader.BundleLoader.LoadCustomOttoSprite();
                 setting.InitializeList();
+                foreach (var list in setting.PresetLists)
+                {
+                    setting.PresetListInitializer(list);
+                }
                 if (setting.FirstTimeLoad == 0)
                 {
                     setting.SetDefaultListValues();
                     setting.FirstTimeLoad = 1;
                 }
-                setting.Apply(true);
+                try
+                {
+                    setting.Apply(true, setting.PresetLists[setting.CurrentIndex].Checker);
+                }
+                catch
+                {
+                }
+
+
                 modEntry.OnGUI = OnGUI;
                 modEntry.OnSaveGUI = OnSaveGUI;
             }

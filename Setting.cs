@@ -88,12 +88,21 @@ namespace OttoIconChanger
         //Custom Local Otto Sprite
         public bool UseLocalImage { get; set; } = true; // Toggle between built-in and local images
         public bool UseLocalAnimation {  get; set; } = false;
+
         public List<string> LocalImagePaths = new List<string>();
         public List<int> LocalImageSetDefaults = new List<int>();
         public List<bool> LocalImageToggles = new List<bool>();
+
         public List<string> LocalAnimationFolderPaths = new List<string>();
         public List<int> LocalAnimationSetDefaults = new List<int>();
         public List<bool> LocalAnimationToggles = new List<bool>();
+
+        public string PresetName;
+        public bool IsPreset;
+        public int CurrentIndex;
+        // List to hold multiple DataEntry objects
+        public List<PresetList> PresetLists = new List<PresetList>();
+
         public int AmountOfFramesOn = 0;
         public int AmountOfFramesOff = 0;
 
@@ -176,55 +185,104 @@ namespace OttoIconChanger
                     LocalAnimationSetDefaults.Add(0);
             }
         }
-        public void Apply(bool LoadBoth)
+        public void PresetListInitializer(PresetList list)
         {
-            int index;
-            if ((Main.setting.UseLocalImage && !Main.setting.UseLocalAnimation) || LoadBoth)
+            while (list.SetDefaults.Count < OttoStates.Length || list.Paths.Count < OttoStates.Length)
             {
-                // Check if file paths are valid for static images
-                // Apply the paths for the selected images
-                index = 0;
-                string[] selectedImagePaths = {
-                    Main.setting.LocalImagePaths[0],
-                    Main.setting.LocalImagePaths[1],
-                    Main.setting.LocalImagePaths[2],
-                    Main.setting.LocalImagePaths[3],
-                    Main.setting.LocalImagePaths[4],
-                    Main.setting.LocalImagePaths[5],
-                    Main.setting.LocalImagePaths[6],
-                    Main.setting.LocalImagePaths[7],
-                    Main.setting.LocalImagePaths[8],
-                    Main.setting.LocalImagePaths[9]};
-
-                // Load images or perform any necessary logic
-                foreach (string imagePath in selectedImagePaths)
+                if (list.SetDefaults.Count < OttoStates.Length)
                 {
-                    PathsLoader.LoadCustomSpriteFromPath(imagePath, index, false);
-                    index++;
+                    list.SetDefaults.Add(0);
+                }
+                if (list.Paths.Count < OttoStates.Length)
+                {
+                    list.Paths.Add(string.Empty);
                 }
             }
-            if ((Main.setting.UseLocalAnimation && Main.setting.UseLocalImage) || LoadBoth)
+        }
+        public void Apply(bool LoadBoth = false, int PresetTypeChecker = 0)
+        {
+            if (!IsPreset)
             {
-                index = 0;
-                // Check if folder paths are valid for animation
-                // Apply the folder paths for the selected animation
-                string[] selectedFolderPaths = {
-                    Main.setting.LocalAnimationFolderPaths[0],
-                    Main.setting.LocalAnimationFolderPaths[1],
-                    Main.setting.LocalAnimationFolderPaths[2],
-                    Main.setting.LocalAnimationFolderPaths[3],
-                    Main.setting.LocalAnimationFolderPaths[4],
-                    Main.setting.LocalAnimationFolderPaths[5],
-                    Main.setting.LocalAnimationFolderPaths[6],
-                    Main.setting.LocalAnimationFolderPaths[7],
-                    Main.setting.LocalAnimationFolderPaths[8],
-                    Main.setting.LocalAnimationFolderPaths[9]};
-
-                // Load animation sprites or perform any necessary logic
-                foreach (string folderPath in selectedFolderPaths)
+                int index;
+                if ((Main.setting.UseLocalImage && !Main.setting.UseLocalAnimation) || LoadBoth)
                 {
-                    PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true);
-                    index++;
+                    // Check if file paths are valid for static images
+                    // Apply the paths for the selected images
+                    index = 0;
+                    string[] selectedImagePaths = new string[10];
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        selectedImagePaths[i] = Main.setting.LocalImagePaths[i];
+                    }
+
+                    // Load images or perform any necessary logic
+                    foreach (string imagePath in selectedImagePaths)
+                    {
+                        PathsLoader.LoadCustomSpriteFromPath(imagePath, index, false);
+                        index++;
+                    }
+                }
+                if ((Main.setting.UseLocalAnimation && Main.setting.UseLocalImage) || LoadBoth)
+                {
+                    index = 0;
+                    // Check if folder paths are valid for animation
+                    // Apply the folder paths for the selected animation
+                    string[] selectedFolderPaths = new string[10];
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        selectedFolderPaths[i] = Main.setting.LocalAnimationFolderPaths[i];
+                    }
+
+                    // Load animation sprites or perform any necessary logic
+                    foreach (string folderPath in selectedFolderPaths)
+                    {
+                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true);
+                        index++;
+                    }
+                }
+            }
+            else
+            {
+                int index;
+                if (PresetTypeChecker == 0)
+                {
+                    // Check if file paths are valid for static images
+                    // Apply the paths for the selected images
+                    index = 0;
+                    string[] selectedImagePaths = new string[10];
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        selectedImagePaths[i] = Main.setting.PresetLists[CurrentIndex].Paths[i];
+                    }
+
+                    // Load images or perform any necessary logic
+                    foreach (string imagePath in selectedImagePaths)
+                    {
+                        PathsLoader.LoadCustomSpriteFromPath(imagePath, index, false);
+                        index++;
+                    }
+                }
+                else
+                {
+                    index = 0;
+                    // Check if folder paths are valid for animation
+                    // Apply the folder paths for the selected animation
+                    string[] selectedFolderPaths = new string[10];
+
+                    for (int i = 0; i < 10; i++)
+                    {
+                        selectedFolderPaths[i] = Main.setting.PresetLists[CurrentIndex].Paths[i];
+                    }
+
+                    // Load animation sprites or perform any necessary logic
+                    foreach (string folderPath in selectedFolderPaths)
+                    {
+                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true);
+                        index++;
+                    }
                 }
             }
         }
