@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using DG.Tweening;
+using HarmonyLib;
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
@@ -10,66 +11,83 @@ namespace OttoIconChanger
     {
         public static Setting setting;
         private static bool isBlinking = false; // Flag to track blinking state
+        private static Sequence Timer;
+        private static Coroutine runningBlinkCoroutine;
 
         [HarmonyPatch(typeof(scnEditor), "OttoBlink")]
         public static class OttoBlinkPatch
         {
             // Cache the FieldInfo object for the private 'ottoBlinkCounter' field
             public static readonly FieldInfo ottoBlinkCounterField = typeof(scnEditor).GetField("ottoBlinkCounter", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            // Postfix method that runs after OttoBlink is called
-            public static void Postfix(scnEditor __instance)
+           
+            public static bool Prefix(scnEditor __instance)
             {
-                if (ottoBlinkCounterField == null) return;
-
-                // Get the current value of the 'ottoBlinkCounter' using the cached FieldInfo
-                int ottoBlinkCounter = (int)ottoBlinkCounterField.GetValue(__instance);
-
-                // Extract the interval value
-                float interval = 60f / (ADOBase.conductor.bpm * ADOBase.conductor.song.pitch * (float)ADOBase.controller.speed) / 2f;
-                if (ADOBase.controller.currFloor.holdLength > -1 && ADOBase.controller.currFloor.nextfloor != null)
-                {
-                    interval = ((float)ADOBase.controller.currFloor.nextfloor.entryTime - (float)ADOBase.controller.currFloor.entryTime);
-                }
-
-                // Calculate 'num' based on the game logic
-                if (RDC.auto)
-                {
-                    setting.OttoBlinkCounter = (ottoBlinkCounter % 2 == 0) ? 3 : 2;
-                }
-                else
-                {
-                    setting.OttoBlinkCounter = (ottoBlinkCounter % 2 == 0) ? 5 : 4;
-                }
-
                 if (setting.CustomOttoImageIsEnabled)
                 {
-                    // Call BlinkCoroutine from OttoBlink
-                    __instance.StartCoroutine(BlinkCoroutine(__instance.autoImage, interval, __instance));
+                    // Extract the interval value
+                    float interval = ((float)ADOBase.controller.currFloor.nextfloor.entryTime - (float)ADOBase.controller.currFloor.entryTime)
+                        * (setting.BlinkDistance / 100);
+                    if (ADOBase.controller.currFloor.holdLength > -1 && ADOBase.controller.currFloor.nextfloor != null)
+                    {
+                        interval = ((float)ADOBase.controller.currFloor.nextfloor.entryTime - (float)ADOBase.controller.currFloor.entryTime);
+                    }
+                    // Calculate 'num' based on the game logic
+                    if (RDC.auto)
+                    {
+                        setting.OttoBlinkState = (setting.OttoBlinkCounter % 2 == 0) ? 3 : 2;
+                    }
+                    else
+                    {
+                        setting.OttoBlinkState = (setting.OttoBlinkCounter % 2 == 0) ? 5 : 4;
+                    }
+                    setting.OttoBlinkCounter++;
+                    if (Timer != null && Timer.active)
+                    {
+                        Timer.Kill(false);
+                    }
+                    Timer = DOTween.Sequence().AppendInterval(interval).OnComplete(delegate
+                    {
+                        isBlinking = false;
+                    }).SetUpdate(true).OnKill(delegate
+                    {
+                        isBlinking = false;
+                    });
+                    isBlinking = true;
+                    if (runningBlinkCoroutine != null)
+                        {
+                            __instance.StopCoroutine(runningBlinkCoroutine);
+                            runningBlinkCoroutine = null;
+                        }
+                    if (setting.UseLocalAnimation)
+                    {
+                        runningBlinkCoroutine = __instance.StartCoroutine(BlinkCoroutine(__instance.autoImage, __instance, __instance.autoSprites));
+                    }
+                    else
+                    {
+                        if (OttoCustomSprite.LoadCustomSprite(__instance.autoImage, true, __instance, false))
+                        {
+                            __instance.autoImage.sprite = __instance.autoSprites[setting.OttoBlinkState];
+                        }
+                        ;
+                    }
+                    return false;
                 }
+                return true;
             }
         }
-        private static IEnumerator BlinkCoroutine(Image autoImage, float duration, scnEditor __instance)
+        private static IEnumerator BlinkCoroutine(Image autoImage, scnEditor __instance, Sprite[] Sprites)
         {
-            isBlinking = true;
-            float startTime = Time.realtimeSinceStartup;
-
             while (isBlinking)
             {
                 // Perform the action (blink start logic)
-                OttoCustomSprite.LoadCustomSprite(autoImage, true, __instance);
-
-                //if (isNull) yield break;
-                // Check if the duration has elapsed
-                if (Time.realtimeSinceStartup - startTime >= duration)
+                if (OttoCustomSprite.LoadCustomSprite(autoImage, true, __instance, false))
                 {
-                    isBlinking = false;
+                    __instance.autoImage.sprite = __instance.autoSprites[setting.OttoBlinkState];
                 }
+                ;
                 // Continue looping without pausing, actively updating
                 yield return null; // Wait until the next frame
             }
-            // Perform the ending action (blink end logic)
-            OttoCustomSprite.LoadCustomSprite(autoImage, false, __instance);
         }
 
         [HarmonyPatch(typeof(scnEditor), "OttoUpdate")]
@@ -77,13 +95,12 @@ namespace OttoIconChanger
         {
             public static bool Prefix (scnEditor __instance)
             {
-                if (!setting.CustomOttoImageIsEnabled || isBlinking) return true;
-                return OttoCustomSprite.LoadCustomSprite(__instance.autoImage, false, __instance);
+                if (!setting.CustomOttoImageIsEnabled) return true;
+                return OttoCustomSprite.LoadCustomSprite(__instance.autoImage, false, __instance, isBlinking);
             }
             public static void Postfix(scnEditor __instance)
             {
                 Image autoImage = __instance.autoImage;
-                bool isHighBPM = (bool)typeof(scnEditor).GetProperty("highBPM", BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(__instance);
 
                 OttoCustomColor.OttoColorChanger(autoImage);
                 if (setting.OttoOpacityChangerIsEnabled)

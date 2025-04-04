@@ -2,6 +2,7 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
+using static UnityModManagerNet.UnityModManager;
 
 namespace OttoIconChanger
 {
@@ -9,6 +10,7 @@ namespace OttoIconChanger
     {
         public static bool IsEnabled = false;
         public static UnityModManager.ModEntry.ModLogger Logger;
+        public static UnityModManager.ModEntry ModEntry;
         public static Harmony harmony;
         public static Setting setting;
 
@@ -18,6 +20,7 @@ namespace OttoIconChanger
             //Load settings
             setting = new Setting();
             setting = UnityModManager.ModSettings.Load<Setting>(modEntry);
+            ModEntry = modEntry;
             Patch.setting = setting;
             Logger = modEntry.Logger;
             modEntry.OnToggle = OnToggle;
@@ -33,24 +36,26 @@ namespace OttoIconChanger
 
                 //Load the Assets
                 BundleLoader.BundleLoader.LoadCustomOttoSprite();
-                setting.InitializeList();
+                setting.LocalImage.InitList(setting.OttoStates.Length);
+                setting.LocalAnimation.InitList(setting.OttoStates.Length);
                 foreach (var list in setting.PresetLists)
                 {
                     setting.PresetListInitializer(list);
                 }
                 if (setting.FirstTimeLoad == 0)
                 {
-                    setting.SetDefaultListValues();
+                    setting.LocalImage.SetDefaultListValues();
+                    setting.LocalAnimation.SetDefaultListValues();
                     setting.FirstTimeLoad = 1;
                 }
-                try
+                if (setting.PresetLists.Count == 0)
+                {
+                    setting.Apply(true);
+                }
+                else
                 {
                     setting.Apply(true, setting.PresetLists[setting.CurrentIndex].Checker);
                 }
-                catch
-                {
-                }
-
 
                 modEntry.OnGUI = OnGUI;
                 modEntry.OnSaveGUI = OnSaveGUI;

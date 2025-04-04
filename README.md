@@ -8,24 +8,38 @@ OttoIconChanger is a mod made for modifying the Otto icon in the game A Dance Of
 * **Otto Opacity Changer** - Modify the transparency of the Otto image.
 * **Otto Position Changer** - Modify the location of the Otto button.
 * **Otto Size Changer** - Modify the size of Otto.
-* **Custom Otto Image** - Change the appearance of Otto by importing image(s).
+* **Custom Otto Image** - Change the appearance of Otto by importing image(s) or video(s).
 
 ## Guide on how to use Custom Otto Image
 
-* **For Non-Animated Images:** 
-Input or browse for the path to the image (e.g., path1/path2/image.png) for the Otto state you'd like to change and then hit "Apply". 
+### **For static Otto:** 
+* Input or browse for the path to the image (e.g., path1/path2/image.png) for the Otto state you'd like to change and then hit "Apply". 
 
-* **For Animated Images:** 
+### **For animated Otto:** 
+* Input or browse for the path to the image (e.g., path1/path2/image.png) for the Otto state you'd like to change and then hit "Apply". 
+
+* **Old/Alternative Method:**
 To make Otto animate. Choose an animated file of your choice (e.g., .gif or .mp4) and turn the video into each seperate frame images. A website for this I recommend is [reaConverter](https://online.reaconverter.com/). Once you have all the frames of your desired animated source as each individual images. Name them all the same with their proper index, for example, name1.png, name2.png, etc... and put all the frames into a folder. Finally direct the ingame path into that folder and click "Apply". Currently, only .png, .jpg and .jpeg frames image type are supported. .jpg and .jpeg will not support transparency channel and so if they do have one, it will be turned to black pixels!!
 
-* Each state have a default state assigned, allowing you to reuse images for unassigned states. For example, if you set the default state for "NervousOn" to "On", the mod will use the image assigned to the "On" state. If no image is assigned to "On", the game will default to its original image.
+* Tip: Please refrain from using long videos or folders with too many frames, since - unless your computer is a beast - it will just crash. A good limit would be roughly 50 frames/1-2 looping GIF/Video.
 
-* Tip: Try not to use too much frames as it can cause loading issue. Make sure there's no duplicated frames (e.g. 100 frames but in reality only 50 is needed for the full animation) and if you plan to use the same animation for multiple states then choose one state to load it and set the default state of the other states to the chosen state.
+### **Additional Info**
+* Each state have a default state, that can be assigned, allowing you to reuse images for unassigned states. For example, if you set the default state for "NervousOn" to "On", the mod will use the image assigned to the "On" state. If no image is assigned to "On", the game will default to its original image.
 
-* **Presets:** You can create a preset(s) of the current profile, type in the name and it will save all paths into a button.
+### **Presets:** 
+* You can create a preset(s) of the current profile, type in the name and it will save all paths into a button.
+
+### **Blink Distance:**
+
+![Blink Distance](./Images/Blink.png)
+* You can adjust how long you want Otto to stay in the blink state after hitting a tile. Here are some examples:
+
+<img src="./Images/50.png" alt="Distance" width="300"/> <img src="./Images/100.png" alt="Distance" width="300"/>
+
 ## Otto States
 
 On & Off:
+
 
 ![Otto Image](./Images/otto_on.png) ![Otto Image](./Images/otto_off.png)
 
@@ -41,11 +55,4 @@ Right On & Off (Nervous uses the same image):
 
 ![Right Image](./Images/otto_right.png) ![Right Image](./Images/otto_off_right.png)
 
-Pet:
-
-![Pet Image](./Images/otto_happy.png)
-
-Miss:
-
-![Miss Image](./Images/otto_miss.png)
-
+Pet: ![Pet Image](./Images/otto_happy.png) Miss: ![Pet Image](./Images/otto_miss.png)

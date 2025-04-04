@@ -71,7 +71,10 @@ namespace OttoIconChanger
                     }
                     Main.setting.OttoColorHex = OttoNewHex;
                 }
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(-5);
                 Main.setting.OttoColorIndependentIsEnabled = GUILayout.Toggle(Main.setting.OttoColorIndependentIsEnabled, "Set Color for On and Off Otto");
+                GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
@@ -164,7 +167,10 @@ namespace OttoIconChanger
                     }
                     GUILayout.EndHorizontal();
                 }
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(-5);
                 Main.setting.OttoOpacityIndependentIsEnabled = GUILayout.Toggle(Main.setting.OttoOpacityIndependentIsEnabled, "Set Opacity for On and Off Otto");
+                GUILayout.EndHorizontal();
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }

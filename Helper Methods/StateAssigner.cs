@@ -21,7 +21,7 @@
             T spriteToReturn = default;
             if (IsBlink)
             {
-                spriteToReturn = HandleSpecialBlinkCounters(Patch.setting.OttoBlinkCounter, On, Off, LeftOn, LeftOff, RightOn, RightOff,
+                spriteToReturn = HandleSpecialBlinkCounters(Patch.setting.OttoBlinkState, On, Off, LeftOn, LeftOff, RightOn, RightOff,
                     NervousOn, NervousOff, Pet, Miss);
             }
             else
@@ -125,7 +125,8 @@
         {
             if (!Patch.setting.IsPreset)
             {
-                return Patch.setting.UseLocalAnimation ? Patch.setting.LocalAnimationSetDefaults[index] : Patch.setting.LocalImageSetDefaults[index];
+                return Patch.setting.UseLocalAnimation ? Patch.setting.LocalAnimation.LocalSetDefaults[index] : 
+                    Patch.setting.LocalImage.LocalSetDefaults[index];
             }
             else
             {
@@ -178,7 +179,7 @@
                 {
                     if (LocalAnimation)
                     {
-                        if (Patch.setting.LocalAnimationToggles[Index] || Patch.setting.IsPreset)
+                        if (Patch.setting.LocalAnimation.LocalToggles[Index] || Patch.setting.IsPreset)
                         {
                             return Sprite;
                         }
@@ -189,7 +190,7 @@
                     }
                     else
                     {
-                        if (Patch.setting.LocalImageToggles[Index] || Patch.setting.IsPreset)
+                        if (Patch.setting.LocalImage.LocalToggles[Index] || Patch.setting.IsPreset)
                         {
                             return Sprite;
                         }

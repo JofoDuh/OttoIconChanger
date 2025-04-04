@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
@@ -11,6 +12,8 @@ namespace OttoIconChanger
     {
         //General
         public int FirstTimeLoad = 0;
+        public int Browsestate = 0;
+        public bool FastMode = true;
         //From AdofaiTweaks
         public bool EditorIsAwake = false;
         public string OttoColorHex { get; set; } = "FFFFFF";
@@ -77,7 +80,8 @@ namespace OttoIconChanger
             "Nervous On", "Nervous Off", "Pet", "Miss"};
         public bool CustomOttoImageIsEnabled = false;
         public bool ResultForPaused;
-        public int OttoBlinkCounter;
+        public int OttoBlinkState;
+        public int OttoBlinkCounter = 0;
         public bool HaveBlink;
         public int indexCheck = 0;
         public float ottoPetTime;
@@ -85,17 +89,18 @@ namespace OttoIconChanger
         public float FramesPerSpriteChange = 10;
         public float SecondsPerSpriteChange = 10f / 120f;
         public bool FrameBasedValuesIsEnabled = false;
+        public float BlinkDistance = 50;
         //Custom Local Otto Sprite
         public bool UseLocalImage { get; set; } = true; // Toggle between built-in and local images
         public bool UseLocalAnimation {  get; set; } = false;
 
-        public List<string> LocalImagePaths = new List<string>();
-        public List<int> LocalImageSetDefaults = new List<int>();
-        public List<bool> LocalImageToggles = new List<bool>();
-
-        public List<string> LocalAnimationFolderPaths = new List<string>();
-        public List<int> LocalAnimationSetDefaults = new List<int>();
-        public List<bool> LocalAnimationToggles = new List<bool>();
+        public PathsStorer LocalImage;
+        public PathsStorer LocalAnimation;
+        public Setting()
+        {
+            LocalImage = new PathsStorer(0, OttoStates.Length);
+            LocalAnimation = new PathsStorer(1, OttoStates.Length);
+        }
 
         public string PresetName;
         public bool IsPreset;
@@ -152,39 +157,6 @@ namespace OttoIconChanger
             // Return 0 if parsing fails
             return 0f;
         }
-
-        //Initializes the list of all states' path
-        public void InitializeList()
-        {
-            int targetCount = OttoStates.Length;
-
-            // Add items to each list until their counts match OttoStates.Count
-            while (LocalImagePaths.Count < targetCount ||
-                   LocalAnimationFolderPaths.Count < targetCount ||
-                   LocalImageToggles.Count < targetCount ||
-                   LocalAnimationToggles.Count < targetCount ||
-                   LocalImageSetDefaults.Count < targetCount ||
-                   LocalAnimationSetDefaults.Count < targetCount)
-            {
-                if (LocalImagePaths.Count < targetCount)
-                    LocalImagePaths.Add(string.Empty);
-
-                if (LocalAnimationFolderPaths.Count < targetCount)
-                    LocalAnimationFolderPaths.Add(string.Empty);
-
-                if (LocalImageToggles.Count < targetCount)
-                    LocalImageToggles.Add(false);
-
-                if (LocalAnimationToggles.Count < targetCount)
-                    LocalAnimationToggles.Add(false);
-
-                if (LocalImageSetDefaults.Count < targetCount)
-                    LocalImageSetDefaults.Add(0);
-
-                if (LocalAnimationSetDefaults.Count < targetCount)
-                    LocalAnimationSetDefaults.Add(0);
-            }
-        }
         public void PresetListInitializer(PresetList list)
         {
             while (list.SetDefaults.Count < OttoStates.Length || list.Paths.Count < OttoStates.Length)
@@ -196,6 +168,72 @@ namespace OttoIconChanger
                 if (list.Paths.Count < OttoStates.Length)
                 {
                     list.Paths.Add(string.Empty);
+                }
+            }
+        }
+        private bool IsVideoFile(string path)
+        {
+            if (string.IsNullOrEmpty(path)) return false;
+
+            string extension = System.IO.Path.GetExtension(path)?.ToLower();
+            return extension == ".mp4" || extension == ".mov" ||
+                   extension == ".avi" || extension == ".webm" ||
+                   extension == ".gif";
+        }
+
+        public void FreeSpace(bool FastMode = true)
+        {
+            List<string> Excludes = new List<string>();
+            if (FastMode)
+            {
+
+                if (PresetLists.Count > 0)
+                {
+                    foreach (var preset in PresetLists)
+                    {
+                        foreach (string path in preset.Paths)
+                        {
+                            bool isVideo = IsVideoFile(path);
+                            if (isVideo)
+                            {
+                                string FolderName = System.IO.Path.GetFileNameWithoutExtension(path);
+                                Excludes.Add(FolderName);
+                            }
+                        }
+                    }
+                }
+            }
+            foreach (var path in LocalAnimation.LocalPaths)
+            {
+                bool isVideo = IsVideoFile(path);
+                if (isVideo)
+                {
+                    string FolderName = System.IO.Path.GetFileNameWithoutExtension(path);
+                    Excludes.Add(FolderName);
+                }
+            }
+
+            // Get the main directory where the folders are stored
+            string mainDirectory = Main.ModEntry.Path;
+
+            // Get all folders within the main directory
+            string[] allFolders = Directory.GetDirectories(mainDirectory);
+
+            foreach (string folderPath in allFolders)
+            {
+                string folderName = Path.GetFileName(folderPath);
+                // If the folder is not in the Excludes list, delete it
+                if (!Excludes.Contains(folderName))
+                {
+                    try
+                    {
+                        Directory.Delete(folderPath, true); // 'true' forces deletion of all contents
+                        //Main.Logger.Log($"Deleted folder: {folderPath}");
+                    }
+                    catch (Exception ex)
+                    {
+                        Main.Logger.Log($"Failed to delete folder: {folderPath}. Error: {ex.Message}");
+                    }
                 }
             }
         }
@@ -213,7 +251,7 @@ namespace OttoIconChanger
 
                     for (int i = 0; i < 10; i++)
                     {
-                        selectedImagePaths[i] = Main.setting.LocalImagePaths[i];
+                        selectedImagePaths[i] = Main.setting.LocalImage.LocalPaths[i];
                     }
 
                     // Load images or perform any necessary logic
@@ -232,13 +270,15 @@ namespace OttoIconChanger
 
                     for (int i = 0; i < 10; i++)
                     {
-                        selectedFolderPaths[i] = Main.setting.LocalAnimationFolderPaths[i];
+                        selectedFolderPaths[i] = Main.setting.LocalAnimation.LocalPaths[i];
                     }
 
                     // Load animation sprites or perform any necessary logic
                     foreach (string folderPath in selectedFolderPaths)
                     {
-                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true);
+                        bool isVideo = IsVideoFile(folderPath);
+
+                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true, isVideo);
                         index++;
                     }
                 }
@@ -280,30 +320,16 @@ namespace OttoIconChanger
                     // Load animation sprites or perform any necessary logic
                     foreach (string folderPath in selectedFolderPaths)
                     {
-                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true);
+                        bool isVideo = IsVideoFile(folderPath);
+
+                        PathsLoader.LoadCustomSpriteFromPath(folderPath, index, true, isVideo);
                         index++;
                     }
                 }
             }
+            FreeSpace(FastMode);
         }
         //Method to set the Default States of state to specific ones at fire-time launch
-        public void SetDefaultListValues()
-        {
-            LocalAnimationSetDefaults[0] = 10;
-            LocalImageSetDefaults[0] = 10;
-            LocalAnimationSetDefaults[1] = 10;
-            LocalImageSetDefaults[1] = 10;
-            LocalAnimationSetDefaults[3] = 1;
-            LocalImageSetDefaults[3] = 1;
-            LocalAnimationSetDefaults[5] = 1;
-            LocalImageSetDefaults[5] = 1;
-            LocalAnimationSetDefaults[7] = 1;
-            LocalImageSetDefaults[7] = 1;
-            LocalAnimationSetDefaults[8] = 10;
-            LocalImageSetDefaults[8] = 10;
-            LocalAnimationSetDefaults[9] = 10;
-            LocalImageSetDefaults[8] = 10;
-        }
         public override void Save(UnityModManager.ModEntry modEntry)
         {
             var filepath = GetPath(modEntry);

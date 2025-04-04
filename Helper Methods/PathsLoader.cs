@@ -3,25 +3,47 @@ using UnityEngine;
 using static UnityEngine.ImageConversion;
 using System.Linq;
 using System;
+using System.Diagnostics;
 
 namespace OttoIconChanger
 {
     public static class PathsLoader
     {
-        // Method to load a static image or an animation and assign them to the bundle
-        public static void LoadCustomSpriteFromPath(string path, int index, bool isFolder)
+        private static readonly string ffmpegPath = Path.Combine(Main.ModEntry.Path, "ffmpeg.exe");
+
+        // Method to load a static image, animation, or video and assign them to the bundle
+        public static void LoadCustomSpriteFromPath(string path, int index, bool isFolder, bool isVideo = false)
         {
-            // Check if the path is a file (for static image) or a directory (for animation)
-            if (isFolder)
+            if (isVideo)
+            {
+                if (File.Exists(path) && File.Exists(ffmpegPath))
+                {
+                    string outputFolder = Path.Combine(Main.ModEntry.Path, Path.GetFileNameWithoutExtension(path));
+
+                    if (!Directory.Exists(outputFolder))
+                    {
+                        Directory.CreateDirectory(outputFolder);
+                    }
+
+                    // Extract frames using FFmpeg
+                    ExtractFramesFromVideo(path, outputFolder);
+
+                    // Load the extracted frames as an animation
+                    LoadAnimationFromFolder(outputFolder, index, true);
+                }
+                else
+                {
+                    LoadAnimationFromFolder(path, index, false);
+                }
+            }
+            else if (isFolder)
             {
                 if (Directory.Exists(path))
                 {
-                    // It's a folder, load the animation
                     LoadAnimationFromFolder(path, index, true);
                 }
                 else
                 {
-                    // It's a folder, load the animation
                     LoadAnimationFromFolder(path, index, false);
                 }
             }
@@ -29,16 +51,33 @@ namespace OttoIconChanger
             {
                 if (File.Exists(path))
                 {
-                    // It's a single file, load the static image
                     LoadStaticImageFromFile(path, index, true);
                 }
                 else
                 {
-                    // It's a single file, load the static image
                     LoadStaticImageFromFile(path, index, false);
                 }
             }
+        }
+        private static void ExtractFramesFromVideo(string videoPath, string outputFolder)
+        {
+            string outputPattern = Path.Combine(outputFolder, "frame_%04d.png"); // frame_0001.png, frame_0002.png, etc.
 
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                FileName = ffmpegPath,
+                Arguments = $"-i \"{videoPath}\" -vf \"fps=30\" \"{outputPattern}\"",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+
+            using (Process process = new Process { StartInfo = processInfo })
+            {
+                process.Start();
+                process.WaitForExit();
+            }
         }
         private static void LoadStaticImageFromFile(string path, int index, bool Valid)
         {

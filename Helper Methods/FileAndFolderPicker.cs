@@ -1,4 +1,5 @@
 ﻿using SFB;
+
 using UnityEngine;
 
 namespace OttoIconChanger
@@ -24,7 +25,7 @@ namespace OttoIconChanger
         }
 
         // Folder picker for selecting a folder containing animation images
-        public string OpenFolderPickerForAnimation()
+        public string PickerForAnimation()
         {
             // Use StandaloneFileBrowser to open the folder picker
             string[] paths = StandaloneFileBrowser.OpenFolderPanel(
@@ -38,6 +39,24 @@ namespace OttoIconChanger
                 return paths[0]; // Return the selected folder path
             }
             return string.Empty;
+        }
+
+        public string OpenFilePickerForVideoGif()
+        {
+            ExtensionFilter[] filters = new ExtensionFilter[]
+            {
+        new ExtensionFilter("Video Files", "mp4", "mov", "avi", "webm"),
+        new ExtensionFilter("GIF Files", "gif")
+            };
+
+            string[] paths = StandaloneFileBrowser.OpenFilePanel(
+                "Select a Video or GIF File",
+                "",
+                filters,
+                false
+            );
+
+            return (paths.Length > 0) ? paths[0] : string.Empty;
         }
     }
 }

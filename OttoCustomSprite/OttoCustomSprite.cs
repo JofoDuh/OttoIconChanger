@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SA.GoogleDoc;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using static OttoIconChanger.Setting;
@@ -21,7 +22,10 @@ namespace OttoIconChanger
                 GUILayout.BeginVertical(); // Nested layout for content
 
                 //Public Use:
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(-5);
                 Main.setting.UseLocalImage = true /*GUILayout.Toggle(Main.setting.UseLocalImage, "Use Local Sprite")*/;
+                GUILayout.EndHorizontal();
 
                 // Static Image Selection Section
                 if (!Main.setting.UseLocalImage)
@@ -89,7 +93,10 @@ namespace OttoIconChanger
                 }
                 else
                 {
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(-5);
                     Main.setting.UseLocalAnimation = GUILayout.Toggle(Main.setting.UseLocalAnimation, "Use Animated Images");
+                    GUILayout.EndHorizontal();
                     if (!Main.setting.UseLocalAnimation)
                     {
                         // "Apply" Button for Static Image Path Selection
@@ -105,20 +112,22 @@ namespace OttoIconChanger
                         {
                             if (index % 2 == 0) GUILayout.BeginHorizontal();
                             GUILayout.BeginVertical();
-                            Main.setting.LocalImageToggles[index1] = GUILayout.Toggle(Main.setting.LocalImageToggles[index1],
+                            Main.setting.LocalImage.LocalToggles[index1] = GUILayout.Toggle(Main.setting.LocalImage.LocalToggles[index1],
                                 Main.setting.OttoStates[index1], GUILayout.Width(700f));
-                            if (Main.setting.LocalImageToggles[index1])
+
+                            if (Main.setting.LocalImage.LocalToggles[index1])
+                                //if (Main.setting.LocalImageToggles[index1])
                             {
                                 GUILayout.BeginHorizontal();
                                 GUILayout.Space(20f);
                                 GUILayout.BeginVertical();
 
-                                Main.setting.LocalImagePaths[index1] = MoreGUILayout.PathAndBrowse
-                                    ("Path:", Main.setting.LocalImagePaths[index1], 500, false);
+                                Main.setting.LocalImage.LocalPaths[index1] = MoreGUILayout.PathAndBrowse
+                                    ("Path:", Main.setting.LocalImage.LocalPaths[index1], 500, false);
                                 // Workaround for ref usage with array elements
-                                int tempState = Main.setting.LocalImageSetDefaults[index1]; // Local variable to hold the current state
+                                int tempState = Main.setting.LocalImage.LocalSetDefaults[index1]; // Local variable to hold the current state
                                 MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                Main.setting.LocalImageSetDefaults[index1] = tempState; // Write back the updated state
+                                Main.setting.LocalImage.LocalSetDefaults[index1] = tempState; // Write back the updated state
 
                                 GUILayout.EndVertical();
                                 GUILayout.EndHorizontal();
@@ -144,24 +153,27 @@ namespace OttoIconChanger
                         {
                             if (index % 2 == 0) GUILayout.BeginHorizontal();
                             GUILayout.BeginVertical();
-                            Main.setting.LocalAnimationToggles[index1] = GUILayout.Toggle
-                                (Main.setting.LocalAnimationToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
-                            if (Main.setting.LocalAnimationToggles[index1])
+                            Main.setting.LocalAnimation.LocalToggles[index1] = GUILayout.Toggle
+                                (Main.setting.LocalAnimation.LocalToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
+
+
+                            if (Main.setting.LocalAnimation.LocalToggles[index1])
                             {
                                 GUILayout.BeginHorizontal();
                                 GUILayout.Space(20f);
                                 GUILayout.BeginVertical();
 
-                                Main.setting.LocalAnimationFolderPaths[index1] = MoreGUILayout.PathAndBrowse
-                                    ("Path:", Main.setting.LocalAnimationFolderPaths[index1], 500, true);
+                                Main.setting.LocalAnimation.LocalPaths[index1] = MoreGUILayout.PathAndBrowse
+                                    ("Path:", Main.setting.LocalAnimation.LocalPaths[index1], 500, true);
                                 // Workaround for ref usage with array elements
-                                int tempState = Main.setting.LocalAnimationSetDefaults[index1]; // Local variable to hold the current state
+                                int tempState = Main.setting.LocalAnimation.LocalSetDefaults[index1]; // Local variable to hold the current state
                                 MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
-                                Main.setting.LocalAnimationSetDefaults[index1] = tempState; // Write back the updated state
+                                Main.setting.LocalAnimation.LocalSetDefaults[index1] = tempState; // Write back the updated state
 
                                 GUILayout.EndVertical();
                                 GUILayout.EndHorizontal();
                             }
+
                             GUILayout.EndVertical();
                             index1++;
                             if (index % 2 == 1 && !(index == 0)) GUILayout.EndHorizontal();
@@ -169,11 +181,16 @@ namespace OttoIconChanger
                         }
                     }
                 }
+
+                GUILayout.Space(10f);
                 if (Main.setting.UseLocalAnimation || (!Main.setting.UseLocalAnimation && !Main.setting.UseLocalImage))
                 {
-                    GUILayout.Space(10f);
+
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Space(-5);
                     // Toggle to switch between Seconds-based or Frame-based values
                     Main.setting.FrameBasedValuesIsEnabled = GUILayout.Toggle(Main.setting.FrameBasedValuesIsEnabled, "Use Frame-Based Values");
+                    GUILayout.EndHorizontal();
                     if (!Main.setting.FrameBasedValuesIsEnabled)
                     {
                         // Seconds per Sprite Change
@@ -214,6 +231,17 @@ namespace OttoIconChanger
                 }
 
                 GUILayout.Space(5f);
+
+                GUILayout.BeginHorizontal();
+                float newBlinkDistance = MoreGUILayout.NamedSlider("Blink Distance: ", Main.setting.BlinkDistance, 0, 100, 300f, 1, 100f, endformat: "%");
+                if (Main.setting.BlinkDistance != newBlinkDistance)
+                {
+                    Main.setting.BlinkDistance = newBlinkDistance;
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.Space(5f);
+
                 //Preset Label
                 GUILayout.Label("Presets");
 
@@ -230,14 +258,14 @@ namespace OttoIconChanger
                     Main.setting.PresetLists[index].Checker = Main.setting.UseLocalAnimation ? 1 : 0;
 
                     //Copy current paths and setdefaults of general list into a seperate created one loop
-                    foreach (var path in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimationFolderPaths : Main.setting.LocalImagePaths)
+                    foreach (var path in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalPaths : Main.setting.LocalImage.LocalPaths)
                     {
                         Main.setting.PresetLists[index].Paths[index1] = Main.setting.UseLocalAnimation ? 
-                            Main.setting.LocalAnimationToggles[index1] ? path : string.Empty : Main.setting.LocalImageToggles[index1] ? path : string.Empty;
+                            Main.setting.LocalAnimation.LocalToggles[index1] ? path : string.Empty : Main.setting.LocalImage.LocalToggles[index1] ? path : string.Empty;
                         index1++;
                     }
                     index1 = 0;
-                    foreach (var setdefault in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimationSetDefaults : Main.setting.LocalImageSetDefaults)
+                    foreach (var setdefault in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalSetDefaults : Main.setting.LocalImage.LocalSetDefaults)
                     {
                         Main.setting.PresetLists[index].SetDefaults[index1] = setdefault;
                         index1++;
@@ -286,7 +314,10 @@ namespace OttoIconChanger
                     PresetIndex++;
                 }
                 GUILayout.EndHorizontal();
-
+                //if (GUILayout.Button("Clear Unused Animation Frames", GUILayout.Width(220f)))
+                //{
+                //    Main.setting.FreeSpace(false);
+                //}
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
@@ -307,8 +338,12 @@ namespace OttoIconChanger
         private static int animationIndex = 0;
         private static float lastFrameTime = 0f;
 
-        public static bool LoadCustomSprite(Image autoImage, bool IsBlink, scnEditor scnEditor)
+        public static bool LoadCustomSprite(Image autoImage, bool IsBlink, scnEditor scnEditor, bool blinking = false)
         {
+            if (blinking)
+            {
+                return false;
+            }
             if (autoImage == null) return true;
 
             Sprite activeSprite = null;

@@ -20,7 +20,7 @@ namespace OttoIconChanger
             return color;
         }
         public static float NamedSlider(string name, float value, float leftValue, float rightValue, float sliderWidth, 
-            float roundNearest = 0, float labelWidth = 0, string valueFormat = "{0}")
+            float roundNearest = 0, float labelWidth = 0, string valueFormat = "{0}", string endformat = "")
         {
             GUILayout.BeginHorizontal();
             float newValue = NamedSliderContent(
@@ -31,12 +31,13 @@ namespace OttoIconChanger
                     sliderWidth,
                     roundNearest,
                     labelWidth,
-                    valueFormat);
+                    valueFormat,
+                    endformat);
             GUILayout.EndHorizontal();
             return newValue;
         }
         private static float NamedSliderContent(string name, float value, float leftValue, float rightValue, float sliderWidth,
-            float roundNearest = 0, float labelWidth = 0, string valueFormat = "{0}")
+            float roundNearest = 0, float labelWidth = 0, string valueFormat = "{0}", string endformat = "")
         {
             if (labelWidth == 0)
             {
@@ -54,7 +55,8 @@ namespace OttoIconChanger
                 newValue = Mathf.Round(newValue / roundNearest) * roundNearest;
             }
             GUILayout.Space(8f);
-            GUILayout.Label(string.Format(valueFormat, newValue), GUILayout.Width(40f));
+            GUILayout.Label(string.Format(valueFormat, newValue) + endformat, GUILayout.Width(40f));
+
             GUILayout.FlexibleSpace();
             return newValue;
         }
@@ -92,7 +94,6 @@ namespace OttoIconChanger
         //Jofo's codes from here
         public static string PathAndBrowse(string label, string path, float fieldWidth, bool isFolder)
         {
-
             FileAndFolderPicker picker = new FileAndFolderPicker();
             // Render the text field and store the updated value
             string updatedPath = NamedTextField(label, path, fieldWidth);
@@ -106,10 +107,32 @@ namespace OttoIconChanger
             }
             else
             {
-                if (GUILayout.Button("Browse", GUILayout.Width(70f), GUILayout.Height(20f)))
+                GUILayout.BeginHorizontal();
+                if (Main.setting.Browsestate == 0)
                 {
-                    updatedPath = picker.OpenFolderPickerForAnimation(); // Folder selection
+                    if (GUILayout.Button("Browse", GUILayout.Width(70f), GUILayout.Height(20f)))
+                    {
+                        Main.setting.Browsestate = 1;
+                    }
                 }
+                if (Main.setting.Browsestate == 1)
+                {
+                    if (GUILayout.Button("Select Folder", GUILayout.Width(100f), GUILayout.Height(20f)))
+                    {
+                        updatedPath = picker.PickerForAnimation(); // File selection
+                        Main.setting.Browsestate = 0;
+                    }
+                    if (GUILayout.Button("Select Video/GIF", GUILayout.Width(120f), GUILayout.Height(20f)))
+                    {
+                        updatedPath = picker.OpenFilePickerForVideoGif(); // File selection
+                        Main.setting.Browsestate = 0;
+                    }
+                    if (GUILayout.Button("Cancel", GUILayout.Width(70f), GUILayout.Height(20f)))
+                    {
+                        Main.setting.Browsestate = 0;
+                    }
+                }
+                GUILayout.EndHorizontal();
             }
             return updatedPath; // Return the updated path
         }

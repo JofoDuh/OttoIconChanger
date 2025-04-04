@@ -11,6 +11,9 @@
     </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Helper Methods\FileAndFolderPicker.cs~RFf939a2.TMP" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>
