@@ -207,6 +207,7 @@ namespace OttoIconChanger
             {
                 if (Main.setting.HideOttoPlayText)
                 {
+                    if (scnEditor.instance.buttonAuto == null) return;
                     scnEditor.instance.buttonAuto.interactable = false;
                 }
             }
@@ -218,6 +219,7 @@ namespace OttoIconChanger
         {
             private static void Postfix()
             {
+                if (scnEditor.instance.buttonAuto == null) return;
                 scnEditor.instance.buttonAuto.interactable = true;
             }
         }
@@ -227,6 +229,7 @@ namespace OttoIconChanger
         {
             private static void Postfix()
             {
+                if (scnEditor.instance.buttonAuto == null) return;
                 scnEditor.instance.buttonAuto.interactable = true;
             }
         }
