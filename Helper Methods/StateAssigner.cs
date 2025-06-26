@@ -21,7 +21,7 @@
             T spriteToReturn = default;
             if (IsBlink)
             {
-                spriteToReturn = HandleSpecialBlinkCounters(Patch.setting.OttoBlinkState, On, Off, LeftOn, LeftOff, RightOn, RightOff,
+                spriteToReturn = HandleSpecialBlinkCounters(Main.setting.OttoBlinkState, On, Off, LeftOn, LeftOff, RightOn, RightOff,
                     NervousOn, NervousOff, Pet, Miss);
             }
             else
@@ -34,23 +34,23 @@
         private static T HandleNonSpecialBlinkCounters<T>(scnEditor scnEditor,
             T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
         {
-            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
-            bool useLocalImage = Patch.setting.UseLocalImage;
+            bool useLocalAnimation = Main.setting.UseLocalAnimation;
+            bool useLocalImage = Main.setting.UseLocalImage;
             if (RDEditorUtils.CheckPointerInObject(scnEditor.buttonAuto))
             {
                 Patch.OttoPetUpdateHelper.UpdateOttoPetTime(scnEditor);
             }
             else
             {
-                Patch.setting.ottoPetTime = 0f;
+                Main.setting.ottoPetTime = 0f;
             }
             if (RDC.auto)
             {
                 if (!ADOBase.editor.autoFailed)
                 {
-                    if (Patch.setting.ottoPetTime < 1.5f)
+                    if (Main.setting.ottoPetTime < 1.5f)
                     {
-                        if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
+                        if (Main.setting.ResultForHighBpm && Main.setting.ResultForPaused)
                         {
                             return ReturnSprite(NervousOn, SetDefaultCheck(Check: PresetDefaultCheck(6),
                                 On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss), 
@@ -70,7 +70,7 @@
             }
             else
             {
-                if (Patch.setting.ResultForHighBpm && Patch.setting.ResultForPaused)
+                if (Main.setting.ResultForHighBpm && Main.setting.ResultForPaused)
                 {
                     return ReturnSprite(NervousOff, SetDefaultCheck(Check: PresetDefaultCheck(7),
                                 On, Off, LeftOn, LeftOff, RightOn, RightOff, NervousOn, NervousOff, Pet, Miss),
@@ -86,8 +86,8 @@
             int blinkCounter, T On, T Off, T LeftOn, T LeftOff, T RightOn, T RightOff, T NervousOn, T NervousOff, T Pet, T Miss)
         {
             T spriteToReturn;
-            bool useLocalAnimation = Patch.setting.UseLocalAnimation;
-            bool useLocalImage = Patch.setting.UseLocalImage;
+            bool useLocalAnimation = Main.setting.UseLocalAnimation;
+            bool useLocalImage = Main.setting.UseLocalImage;
             switch (blinkCounter)
             {
                 case 2:
@@ -123,15 +123,19 @@
 
         private static int PresetDefaultCheck(int index)
         {
-            if (!Patch.setting.IsPreset)
-            {
-                return Patch.setting.UseLocalAnimation ? Patch.setting.LocalAnimation.LocalSetDefaults[index] : 
-                    Patch.setting.LocalImage.LocalSetDefaults[index];
-            }
-            else
-            {
-                return Patch.setting.PresetLists[Patch.setting.CurrentIndex].SetDefaults[index];
-            }
+            return Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalSetDefaults[index] :
+    Main.setting.LocalImage.LocalSetDefaults[index];
+            //if (!Main.setting.IsPreset)
+            //{
+            //    return Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalSetDefaults[index] : 
+            //        Main.setting.LocalImage.LocalSetDefaults[index];
+            //}
+            //else
+            //{
+            //    return Main.setting.PresetLists[Main.setting.CurrentPreset].UseLocalAnimation ? 
+            //        Main.setting.PresetLists[Main.setting.CurrentPreset].LocalAnimation.LocalSetDefaults[index] :
+            //        Main.setting.PresetLists[Main.setting.CurrentPreset].LocalImage.LocalSetDefaults[index];
+            //}
         }
         public static T SetDefaultCheck<T>(int Check, T On = default, T Off = default, T LeftOn = default, T LeftOff = default, T RightOn = default, T RightOff = default,
     T NervousOn = default, T NervousOff = default, T Pet = default, T Miss = default)
@@ -179,7 +183,7 @@
                 {
                     if (LocalAnimation)
                     {
-                        if (Patch.setting.LocalAnimation.LocalToggles[Index] || Patch.setting.IsPreset)
+                        if (Main.setting.LocalAnimation.LocalToggles[Index])
                         {
                             return Sprite;
                         }
@@ -190,7 +194,7 @@
                     }
                     else
                     {
-                        if (Patch.setting.LocalImage.LocalToggles[Index] || Patch.setting.IsPreset)
+                        if (Main.setting.LocalImage.LocalToggles[Index])
                         {
                             return Sprite;
                         }

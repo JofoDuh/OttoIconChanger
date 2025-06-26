@@ -2,7 +2,6 @@
 using HarmonyLib;
 using UnityEngine;
 using UnityModManagerNet;
-using static UnityModManagerNet.UnityModManager;
 
 namespace OttoIconChanger
 {
@@ -17,13 +16,12 @@ namespace OttoIconChanger
         //EntryMethod At startup
         internal static void Setup(UnityModManager.ModEntry modEntry)
         {
-            //Load settings
-            setting = new Setting();
-            setting = UnityModManager.ModSettings.Load<Setting>(modEntry);
+            //Load settings        
             ModEntry = modEntry;
-            Patch.setting = setting;
             Logger = modEntry.Logger;
             modEntry.OnToggle = OnToggle;
+            setting = Setting.Load(modEntry);
+            Presets.setting = setting;
         }
         private static bool OnToggle(UnityModManager.ModEntry modEntry, bool value)
         {
@@ -36,26 +34,8 @@ namespace OttoIconChanger
 
                 //Load the Assets
                 BundleLoader.BundleLoader.LoadCustomOttoSprite();
-                setting.LocalImage.InitList(setting.OttoStates.Length);
-                setting.LocalAnimation.InitList(setting.OttoStates.Length);
-                foreach (var list in setting.PresetLists)
-                {
-                    setting.PresetListInitializer(list);
-                }
-                if (setting.FirstTimeLoad == 0)
-                {
-                    setting.LocalImage.SetDefaultListValues();
-                    setting.LocalAnimation.SetDefaultListValues();
-                    setting.FirstTimeLoad = 1;
-                }
-                if (setting.PresetLists.Count == 0)
-                {
-                    setting.Apply(true);
-                }
-                else
-                {
-                    setting.Apply(true, setting.PresetLists[setting.CurrentIndex].Checker);
-                }
+                Presets.LoadFromPreset();
+                Presets.Apply(true);
 
                 modEntry.OnGUI = OnGUI;
                 modEntry.OnSaveGUI = OnSaveGUI;
@@ -70,6 +50,11 @@ namespace OttoIconChanger
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
             // Mod settings window
+            Presets.PresetsSettings();
+            GUILayout.Space(5); // Add space between sections
+            setting.HideOttoPlayText = GUILayout.Toggle(setting.HideOttoPlayText, "Hide Autoplay Text");
+
+            GUILayout.Space(5); // Add space between sections
             setting.NoNervousOttoIsEnabled = GUILayout.Toggle(setting.NoNervousOttoIsEnabled, "No Nervous Otto"); //Toggle to make Otto never nervous
 
             GUILayout.Space(5); // Add space between sections

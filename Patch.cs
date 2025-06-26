@@ -9,7 +9,6 @@ namespace OttoIconChanger
 {
     public static class Patch
     {
-        public static Setting setting;
         private static bool isBlinking = false; // Flag to track blinking state
         private static Sequence Timer;
         private static Coroutine runningBlinkCoroutine;
@@ -22,25 +21,20 @@ namespace OttoIconChanger
            
             public static bool Prefix(scnEditor __instance)
             {
-                if (setting.CustomOttoImageIsEnabled)
+                if (Main.setting.CustomOttoImageIsEnabled)
                 {
                     // Extract the interval value
                     float interval = ((float)ADOBase.controller.currFloor.nextfloor.entryTime - (float)ADOBase.controller.currFloor.entryTime)
-                        * (setting.BlinkDistance / 100);
+                        * (Main.setting.BlinkDistance / 100);
                     if (ADOBase.controller.currFloor.holdLength > -1 && ADOBase.controller.currFloor.nextfloor != null)
                     {
                         interval = ((float)ADOBase.controller.currFloor.nextfloor.entryTime - (float)ADOBase.controller.currFloor.entryTime);
                     }
                     // Calculate 'num' based on the game logic
-                    if (RDC.auto)
-                    {
-                        setting.OttoBlinkState = (setting.OttoBlinkCounter % 2 == 0) ? 3 : 2;
-                    }
-                    else
-                    {
-                        setting.OttoBlinkState = (setting.OttoBlinkCounter % 2 == 0) ? 5 : 4;
-                    }
-                    setting.OttoBlinkCounter++;
+                    Main.setting.OttoBlinkState = RDC.auto ? (Main.setting.OttoBlinkCounter % 2 == 0) ? 3 : 2 
+                        : (Main.setting.OttoBlinkCounter % 2 == 0) ? 5 : 4;
+
+                    Main.setting.OttoBlinkCounter++;
                     if (Timer != null && Timer.active)
                     {
                         Timer.Kill(false);
@@ -58,7 +52,7 @@ namespace OttoIconChanger
                             __instance.StopCoroutine(runningBlinkCoroutine);
                             runningBlinkCoroutine = null;
                         }
-                    if (setting.UseLocalAnimation)
+                    if (Main.setting.UseLocalAnimation)
                     {
                         runningBlinkCoroutine = __instance.StartCoroutine(BlinkCoroutine(__instance.autoImage, __instance, __instance.autoSprites));
                     }
@@ -66,9 +60,8 @@ namespace OttoIconChanger
                     {
                         if (OttoCustomSprite.LoadCustomSprite(__instance.autoImage, true, __instance, false))
                         {
-                            __instance.autoImage.sprite = __instance.autoSprites[setting.OttoBlinkState];
-                        }
-                        ;
+                            __instance.autoImage.sprite = __instance.autoSprites[Main.setting.OttoBlinkState];
+                        }                      
                     }
                     return false;
                 }
@@ -82,7 +75,7 @@ namespace OttoIconChanger
                 // Perform the action (blink start logic)
                 if (OttoCustomSprite.LoadCustomSprite(autoImage, true, __instance, false))
                 {
-                    __instance.autoImage.sprite = __instance.autoSprites[setting.OttoBlinkState];
+                    __instance.autoImage.sprite = __instance.autoSprites[Main.setting.OttoBlinkState];
                 }
                 ;
                 // Continue looping without pausing, actively updating
@@ -95,7 +88,7 @@ namespace OttoIconChanger
         {
             public static bool Prefix (scnEditor __instance)
             {
-                if (!setting.CustomOttoImageIsEnabled) return true;
+                if (!Main.setting.CustomOttoImageIsEnabled) return true;
                 return OttoCustomSprite.LoadCustomSprite(__instance.autoImage, false, __instance, isBlinking);
             }
             public static void Postfix(scnEditor __instance)
@@ -103,7 +96,7 @@ namespace OttoIconChanger
                 Image autoImage = __instance.autoImage;
 
                 OttoCustomColor.OttoColorChanger(autoImage);
-                if (setting.OttoOpacityChangerIsEnabled)
+                if (Main.setting.OttoOpacityChangerIsEnabled)
                 {
                     OttoCustomColor.OttoOpacityChanger(autoImage);
                 }
@@ -147,7 +140,7 @@ namespace OttoIconChanger
                     autoPetTimeField.SetValue(scnEditor, autoPetTime);
                 }
                 // Update the custom mod's state
-                setting.ottoPetTime = autoPetTime;
+                Main.setting.ottoPetTime = autoPetTime;
             }
         }
         // Patch to set result of highBPM to false to prevent red Otto, as well as getting the current result
@@ -156,11 +149,11 @@ namespace OttoIconChanger
         {
             public static void Postfix(ref bool __result)
             {
-                if (setting.NoNervousOttoIsEnabled)
+                if (Main.setting.NoNervousOttoIsEnabled)
                 {
                     __result = false;
                 }
-                setting.ResultForHighBpm = __result;
+                Main.setting.ResultForHighBpm = __result;
             }
         }
 
@@ -170,11 +163,75 @@ namespace OttoIconChanger
         {
             public static void Postfix(ref bool __result)
             {
-                setting.ResultForPaused = __result;
+                Main.setting.ResultForPaused = __result;
             }
         }
 
-        // Store original offset values of Otto if not already done via start Patch of editor scene
+        [HarmonyPatch(typeof(scrShowIfDebug), "Update")]
+        private static class HideAutoplayTextPatch
+        {
+            private static bool prevVal;
+
+            public static void Prefix()
+            {
+                prevVal = RDC.auto;
+                if (Main.setting.HideOttoPlayText)
+                {
+                    RDC.auto = false;
+                }
+            }
+
+            public static void Postfix()
+            {
+                RDC.auto = prevVal;
+            }
+        }
+
+        [HarmonyPatch(typeof(scrController), nameof(scrController.OnLandOnPortal))]
+        private static class OnLandOnPortalPatch
+        {
+            static void Postfix()
+            {
+                if (Main.setting.HideOttoPlayText && RDC.auto)
+                {
+                    scrController.instance.txtAllStrictClear.gameObject.SetActive(false);
+                    scrController.instance.txtCongrats.text = "Autoplayed";
+                }
+            }
+        }
+
+        [HarmonyPatch(typeof(scnGame), nameof(scnGame.instance.Play))]
+        private static class PlayGamePatch
+        {
+            static void Postfix()
+            {
+                if (Main.setting.HideOttoPlayText)
+                {
+                    scnEditor.instance.buttonAuto.interactable = false;
+                }
+            }
+        }
+
+
+        [HarmonyPatch(typeof(scnEditor), "ResetScene")]
+        internal static class scnEditor_ResetScene_Patch
+        {
+            private static void Postfix()
+            {
+                scnEditor.instance.buttonAuto.interactable = true;
+            }
+        }
+
+        [HarmonyPatch(typeof(scrController), "StartLoadingScene")]
+        internal static class scrController_StartLoadingScene_Patch
+        {
+            private static void Postfix()
+            {
+                scnEditor.instance.buttonAuto.interactable = true;
+            }
+        }
+
+        // Store original offset values of Otto, if not already done, via start Patch of editor scene, and make disabled Otto not grey
         [HarmonyPatch(typeof(scnEditor), "Start")]
         public static class StartPatch
         {
@@ -182,16 +239,18 @@ namespace OttoIconChanger
             {
                 bool HaveStoreOriginalValue = false;
                 var autoImageRect = scnEditor.instance.autoImage.GetComponent<RectTransform>();
-                var buttonRect = scnEditor.instance.autoImage.GetComponentInChildren<Button>()?.GetComponent<RectTransform>();
+                var buttonRect = scnEditor.instance.buttonAuto.GetComponent<RectTransform>();
 
                 if (!HaveStoreOriginalValue)
                 {
-                    setting.originalOttoImageOffsetMin = autoImageRect.offsetMin;
-                    setting.originalOttoImageOffsetMax = autoImageRect.offsetMax;
-                    setting.originalOttoButtonOffsetMax = buttonRect.offsetMax;
-                    setting.originalOttoButtonOffsetMin = buttonRect.offsetMin;
+                    Main.setting.originalOttoButtonSizeDelta = buttonRect.sizeDelta;
+                    Main.setting.originalOttoImageAnchoredPosition = autoImageRect.anchoredPosition;
+                    Main.setting.originalOttoImageSizeDelta = autoImageRect.sizeDelta;
                     HaveStoreOriginalValue = true;
                 }
+                var colors = scnEditor.instance.buttonAuto.colors;
+                colors.disabledColor = Color.white;
+                scnEditor.instance.buttonAuto.colors = colors;
             }
         }
     }

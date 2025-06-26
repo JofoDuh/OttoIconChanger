@@ -177,7 +177,7 @@ namespace OttoIconChanger
 
                 // Assign new animation frames
                 BundleLoader.BundleLoader.CustomAniOttoSprites[index] = animationFrames;
-                Patch.setting.AmountOfFramesOn = animationFrames.Length;
+                Main.setting.AmountOfFramesOn = animationFrames.Length;
             }
             else
             {

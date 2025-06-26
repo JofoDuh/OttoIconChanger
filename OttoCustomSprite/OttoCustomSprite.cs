@@ -1,5 +1,4 @@
-﻿using SA.GoogleDoc;
-using System;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 using static OttoIconChanger.Setting;
@@ -102,18 +101,18 @@ namespace OttoIconChanger
                         // "Apply" Button for Static Image Path Selection
                         if (GUILayout.Button("Apply", GUILayout.Width(60f), GUILayout.Height(20f)))
                         {
-                            Main.setting.IsPreset = false;
-                            Main.setting.Apply(false);
+                            //if (Main.setting.IsPreset) { Main.setting.LoadFromPreset(); return; }
+                            Presets.Apply(false);
                         }
                         GUILayout.Label("Image Paths:");
                         int index1 = 0;
                         int index = 0;
-                        foreach (string state in Main.setting.OttoStates)
+                        foreach (string state in Enum.GetNames(typeof(Setting.OttoStates)))
                         {
                             if (index % 2 == 0) GUILayout.BeginHorizontal();
                             GUILayout.BeginVertical();
                             Main.setting.LocalImage.LocalToggles[index1] = GUILayout.Toggle(Main.setting.LocalImage.LocalToggles[index1],
-                                Main.setting.OttoStates[index1], GUILayout.Width(700f));
+                                Enum.GetNames(typeof(Setting.OttoStates))[index1], GUILayout.Width(700f));
 
                             if (Main.setting.LocalImage.LocalToggles[index1])
                                 //if (Main.setting.LocalImageToggles[index1])
@@ -126,7 +125,7 @@ namespace OttoIconChanger
                                     ("Path:", Main.setting.LocalImage.LocalPaths[index1], 500, false);
                                 // Workaround for ref usage with array elements
                                 int tempState = Main.setting.LocalImage.LocalSetDefaults[index1]; // Local variable to hold the current state
-                                MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
+                                MoreGUILayout.SetDefaultDropdown(ref tempState, Enum.GetNames(typeof(Setting.OttoStates)), index1); // Pass the local variable by reference
                                 Main.setting.LocalImage.LocalSetDefaults[index1] = tempState; // Write back the updated state
 
                                 GUILayout.EndVertical();
@@ -143,18 +142,18 @@ namespace OttoIconChanger
                         // "Apply" Button for Animation Folder Selection
                         if (GUILayout.Button("Apply", GUILayout.Width(60f), GUILayout.Height(20f)))
                         {
-                            Main.setting.IsPreset = false;
-                            Main.setting.Apply(false);
+                            //if (Main.setting.IsPreset) { Presets.LoadFromPreset(); return; }
+                            Presets.Apply(false);
                         }
                         GUILayout.Label("Folder Paths:");
                         int index1 = 0;
                         int index = 0;
-                        foreach (string state in Main.setting.OttoStates)
+                        foreach (string state in Enum.GetNames(typeof(Setting.OttoStates)))
                         {
                             if (index % 2 == 0) GUILayout.BeginHorizontal();
                             GUILayout.BeginVertical();
                             Main.setting.LocalAnimation.LocalToggles[index1] = GUILayout.Toggle
-                                (Main.setting.LocalAnimation.LocalToggles[index1], Main.setting.OttoStates[index1], GUILayout.Width(700f));
+                                (Main.setting.LocalAnimation.LocalToggles[index1], Enum.GetNames(typeof(Setting.OttoStates))[index1], GUILayout.Width(700f));
 
 
                             if (Main.setting.LocalAnimation.LocalToggles[index1])
@@ -167,7 +166,7 @@ namespace OttoIconChanger
                                     ("Path:", Main.setting.LocalAnimation.LocalPaths[index1], 500, true);
                                 // Workaround for ref usage with array elements
                                 int tempState = Main.setting.LocalAnimation.LocalSetDefaults[index1]; // Local variable to hold the current state
-                                MoreGUILayout.SetDefaultDropdown(ref tempState, Main.setting.OttoStates, index1); // Pass the local variable by reference
+                                MoreGUILayout.SetDefaultDropdown(ref tempState, Enum.GetNames(typeof(Setting.OttoStates)), index1); // Pass the local variable by reference
                                 Main.setting.LocalAnimation.LocalSetDefaults[index1] = tempState; // Write back the updated state
 
                                 GUILayout.EndVertical();
@@ -239,85 +238,6 @@ namespace OttoIconChanger
                     Main.setting.BlinkDistance = newBlinkDistance;
                 }
                 GUILayout.EndHorizontal();
-
-                GUILayout.Space(5f);
-
-                //Preset Label
-                GUILayout.Label("Presets");
-
-                //Save Preset Button
-                GUILayout.BeginHorizontal();
-                if (GUILayout.Button("Save Preset"))
-                {
-                    int index = Main.setting.PresetLists.Count;
-                    int index1 = 0;
-
-                    //Create Preset and assign Name based off of Preset Name as well as Checker if this preset is animated or non animated
-                    Main.setting.PresetLists.Insert(index, new PresetList(Main.setting.PresetName));
-                    Main.setting.PresetListInitializer(Main.setting.PresetLists[index]);
-                    Main.setting.PresetLists[index].Checker = Main.setting.UseLocalAnimation ? 1 : 0;
-
-                    //Copy current paths and setdefaults of general list into a seperate created one loop
-                    foreach (var path in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalPaths : Main.setting.LocalImage.LocalPaths)
-                    {
-                        Main.setting.PresetLists[index].Paths[index1] = Main.setting.UseLocalAnimation ? 
-                            Main.setting.LocalAnimation.LocalToggles[index1] ? path : string.Empty : Main.setting.LocalImage.LocalToggles[index1] ? path : string.Empty;
-                        index1++;
-                    }
-                    index1 = 0;
-                    foreach (var setdefault in Main.setting.UseLocalAnimation ? Main.setting.LocalAnimation.LocalSetDefaults : Main.setting.LocalImage.LocalSetDefaults)
-                    {
-                        Main.setting.PresetLists[index].SetDefaults[index1] = setdefault;
-                        index1++;
-                    }
-                    Main.setting.PresetName = string.Empty;
-                }
-
-                //Inputtable Preset Name Field
-                Main.setting.PresetName = MoreGUILayout.NamedTextField("Preset Name:", Main.setting.PresetName, 100f, 80f);
-                GUILayout.EndHorizontal();
-
-                GUILayout.BeginHorizontal();
-                //Delete Preset Button & Selected Preset Label
-                if (Main.setting.PresetLists.Count > 0)
-                {
-                    if (Main.setting.IsPreset)
-                    {
-                        if (GUILayout.Button("Delete Preset", GUILayout.Width(120f)))
-                        {
-                            Main.setting.PresetLists.RemoveAt(Main.setting.CurrentIndex); //Remove Preset upon click
-                            if (Main.setting.CurrentIndex >= Main.setting.PresetLists.Count) Main.setting.CurrentIndex = Main.setting.PresetLists.Count - 1; //Check if CurrentIndex exceeds List range
-                            Main.setting.IsPreset = false; //Deactivate Preset mode
-                            Main.setting.Apply(false); //Unload Preset and load general
-                        }
-                    }
-                    GUILayout.Label($"Selected Preset: {(!Main.setting.IsPreset || Main.setting.CurrentIndex >= Main.setting.PresetLists.Count ? "None" : Main.setting.PresetLists[Main.setting.CurrentIndex].Name)}", 
-                        GUILayout.Width(200f));
-                }
-                else
-                {
-                    GUILayout.Label("No Presets Available");
-                }
-                GUILayout.EndHorizontal();
-
-                //List all available presets as button and load preset upon click
-                GUILayout.BeginHorizontal();
-                int PresetIndex = 0;
-                foreach (var preset in Main.setting.PresetLists)
-                {         
-                    if (GUILayout.Button(Main.setting.PresetLists[PresetIndex].Name, GUILayout.Width(120f)))
-                    {
-                        Main.setting.IsPreset = true; //Activate Preset mode
-                        Main.setting.CurrentIndex = PresetIndex; //Assign current Preset index to general variable
-                        Main.setting.Apply(false, Main.setting.PresetLists[PresetIndex].Checker); //Load
-                    }
-                    PresetIndex++;
-                }
-                GUILayout.EndHorizontal();
-                //if (GUILayout.Button("Clear Unused Animation Frames", GUILayout.Width(220f)))
-                //{
-                //    Main.setting.FreeSpace(false);
-                //}
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
             }
@@ -335,7 +255,7 @@ namespace OttoIconChanger
             }
         }
 
-        private static int animationIndex = 0;
+        public static int animationIndex = 0;
         private static float lastFrameTime = 0f;
 
         public static bool LoadCustomSprite(Image autoImage, bool IsBlink, scnEditor scnEditor, bool blinking = false)
@@ -350,13 +270,14 @@ namespace OttoIconChanger
             int currentMaxFrames = 1;
 
             // Calculate frame interval dynamically
-            float frameInterval = Patch.setting.FrameBasedValuesIsEnabled
-                ? (Patch.setting.FramesPerSecond > 0 ? Patch.setting.FramesPerSpriteChange / Patch.setting.FramesPerSecond : float.MaxValue)
-                : Patch.setting.SecondsPerSpriteChange;
+            float frameInterval = Main.setting.FrameBasedValuesIsEnabled
+                ? (Main.setting.FramesPerSecond > 0 ? Main.setting.FramesPerSpriteChange / Main.setting.FramesPerSecond : float.MaxValue)
+                : Main.setting.SecondsPerSpriteChange;
 
             if (Main.setting.UseLocalImage)
             {
-                if ((Main.setting.UseLocalAnimation && !Main.setting.IsPreset) || (Main.setting.IsPreset && Main.setting.PresetLists[Main.setting.CurrentIndex].Checker == 1))
+                if ((Main.setting.UseLocalAnimation /*&& !Main.setting.IsPreset*/) /*|| (Main.setting.IsPreset 
+                    && Main.setting.PresetLists[Main.setting.CurrentPreset].UseLocalAnimation)*/)
                 {
                     activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink,
                     BundleLoader.BundleLoader.CustomAniOttoSprites[0][StateAssigner.ApplyOverflowLogic(animationIndex,
@@ -412,7 +333,7 @@ namespace OttoIconChanger
             {
                 if (Main.setting.IsAnimatedCharacterSelected())
                 {
-                    switch (Patch.setting.SelectedCharacter)
+                    switch (Main.setting.SelectedCharacter)
                     {
                         case OttoCharacter.FireFlyAnimated:
 
@@ -460,7 +381,7 @@ namespace OttoIconChanger
                 }
                 else
                 {
-                    switch (Patch.setting.SelectedCharacter)
+                    switch (Main.setting.SelectedCharacter)
                     {
                         case OttoCharacter.FurinaNonAnimated:
                             activeSprite = StateAssigner.AssignSprite(scnEditor, IsBlink, BundleLoader.BundleLoader.FurinaOttoOn, BundleLoader.BundleLoader.FurinaOttoOff);
@@ -472,7 +393,7 @@ namespace OttoIconChanger
                 }
             }
             if ((Main.setting.UseLocalImage && Main.setting.UseLocalAnimation) || (Main.setting.IsAnimatedCharacterSelected() && !Main.setting.UseLocalImage) 
-                || (Main.setting.IsPreset && Main.setting.PresetLists[Main.setting.CurrentIndex].Checker == 1))
+                /*|| (Main.setting.IsPreset && Main.setting.PresetLists[Main.setting.CurrentPreset].UseLocalAnimation)*/)
             {
                 if (currentMaxFrames <= 0) currentMaxFrames++;
                 // Update animation index based on time
